@@ -1,8 +1,6 @@
 library article_model;
 
 import 'dart:convert';
-
-import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:news_app/src/models/news_source_model.dart';

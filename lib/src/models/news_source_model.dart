@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -16,6 +14,7 @@ abstract class NewsSourceModel
   factory NewsSourceModel([updates(NewsSourceModelBuilder b)]) =
       _$NewsSourceModel;
 
+  @nullable
   @BuiltValueField(wireName: 'id')
   String get id;
   @BuiltValueField(wireName: 'name')
