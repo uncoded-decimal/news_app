@@ -1,39 +1,39 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'news_source_model.dart';
+part of source;
 
 // **************************************************************************
 // BuiltValueGenerator
 // **************************************************************************
 
-Serializer<NewsSourceModel> _$newsSourceModelSerializer =
-    new _$NewsSourceModelSerializer();
+Serializer<SourceModel> _$sourceModelSerializer = new _$SourceModelSerializer();
 
-class _$NewsSourceModelSerializer
-    implements StructuredSerializer<NewsSourceModel> {
+class _$SourceModelSerializer implements StructuredSerializer<SourceModel> {
   @override
-  final Iterable<Type> types = const [NewsSourceModel, _$NewsSourceModel];
+  final Iterable<Type> types = const [SourceModel, _$SourceModel];
   @override
-  final String wireName = 'NewsSourceModel';
+  final String wireName = 'SourceModel';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, NewsSourceModel object,
+  Iterable<Object> serialize(Serializers serializers, SourceModel object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object>[
-      'id',
-      serializers.serialize(object.id, specifiedType: const FullType(String)),
       'name',
       serializers.serialize(object.name, specifiedType: const FullType(String)),
     ];
-
+    if (object.id != null) {
+      result
+        ..add('id')
+        ..add(serializers.serialize(object.id,
+            specifiedType: const FullType(String)));
+    }
     return result;
   }
 
   @override
-  NewsSourceModel deserialize(
-      Serializers serializers, Iterable<Object> serialized,
+  SourceModel deserialize(Serializers serializers, Iterable<Object> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new NewsSourceModelBuilder();
+    final result = new SourceModelBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -56,36 +56,32 @@ class _$NewsSourceModelSerializer
   }
 }
 
-class _$NewsSourceModel extends NewsSourceModel {
+class _$SourceModel extends SourceModel {
   @override
   final String id;
   @override
   final String name;
 
-  factory _$NewsSourceModel([void Function(NewsSourceModelBuilder) updates]) =>
-      (new NewsSourceModelBuilder()..update(updates)).build();
+  factory _$SourceModel([void Function(SourceModelBuilder) updates]) =>
+      (new SourceModelBuilder()..update(updates)).build();
 
-  _$NewsSourceModel._({this.id, this.name}) : super._() {
-    if (id == null) {
-      throw new BuiltValueNullFieldError('NewsSourceModel', 'id');
-    }
+  _$SourceModel._({this.id, this.name}) : super._() {
     if (name == null) {
-      throw new BuiltValueNullFieldError('NewsSourceModel', 'name');
+      throw new BuiltValueNullFieldError('SourceModel', 'name');
     }
   }
 
   @override
-  NewsSourceModel rebuild(void Function(NewsSourceModelBuilder) updates) =>
+  SourceModel rebuild(void Function(SourceModelBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  NewsSourceModelBuilder toBuilder() =>
-      new NewsSourceModelBuilder()..replace(this);
+  SourceModelBuilder toBuilder() => new SourceModelBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is NewsSourceModel && id == other.id && name == other.name;
+    return other is SourceModel && id == other.id && name == other.name;
   }
 
   @override
@@ -95,16 +91,15 @@ class _$NewsSourceModel extends NewsSourceModel {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('NewsSourceModel')
+    return (newBuiltValueToStringHelper('SourceModel')
           ..add('id', id)
           ..add('name', name))
         .toString();
   }
 }
 
-class NewsSourceModelBuilder
-    implements Builder<NewsSourceModel, NewsSourceModelBuilder> {
-  _$NewsSourceModel _$v;
+class SourceModelBuilder implements Builder<SourceModel, SourceModelBuilder> {
+  _$SourceModel _$v;
 
   String _id;
   String get id => _$this._id;
@@ -114,9 +109,9 @@ class NewsSourceModelBuilder
   String get name => _$this._name;
   set name(String name) => _$this._name = name;
 
-  NewsSourceModelBuilder();
+  SourceModelBuilder();
 
-  NewsSourceModelBuilder get _$this {
+  SourceModelBuilder get _$this {
     if (_$v != null) {
       _id = _$v.id;
       _name = _$v.name;
@@ -126,21 +121,21 @@ class NewsSourceModelBuilder
   }
 
   @override
-  void replace(NewsSourceModel other) {
+  void replace(SourceModel other) {
     if (other == null) {
       throw new ArgumentError.notNull('other');
     }
-    _$v = other as _$NewsSourceModel;
+    _$v = other as _$SourceModel;
   }
 
   @override
-  void update(void Function(NewsSourceModelBuilder) updates) {
+  void update(void Function(SourceModelBuilder) updates) {
     if (updates != null) updates(this);
   }
 
   @override
-  _$NewsSourceModel build() {
-    final _$result = _$v ?? new _$NewsSourceModel._(id: id, name: name);
+  _$SourceModel build() {
+    final _$result = _$v ?? new _$SourceModel._(id: id, name: name);
     replace(_$result);
     return _$result;
   }

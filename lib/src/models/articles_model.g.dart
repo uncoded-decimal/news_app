@@ -1,30 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of article_model;
+part of articles;
 
 // **************************************************************************
 // BuiltValueGenerator
 // **************************************************************************
 
-Serializer<ArticleModel> _$articleModelSerializer =
-    new _$ArticleModelSerializer();
+Serializer<ArticlesModel> _$articlesModelSerializer =
+    new _$ArticlesModelSerializer();
 
-class _$ArticleModelSerializer implements StructuredSerializer<ArticleModel> {
+class _$ArticlesModelSerializer implements StructuredSerializer<ArticlesModel> {
   @override
-  final Iterable<Type> types = const [ArticleModel, _$ArticleModel];
+  final Iterable<Type> types = const [ArticlesModel, _$ArticlesModel];
   @override
-  final String wireName = 'ArticleModel';
+  final String wireName = 'ArticlesModel';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, ArticleModel object,
+  Iterable<Object> serialize(Serializers serializers, ArticlesModel object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object>[
       'source',
       serializers.serialize(object.source,
-          specifiedType: const FullType(NewsSourceModel)),
-      'author',
-      serializers.serialize(object.author,
-          specifiedType: const FullType(String)),
+          specifiedType: const FullType(SourceModel)),
       'title',
       serializers.serialize(object.title,
           specifiedType: const FullType(String)),
@@ -33,24 +30,36 @@ class _$ArticleModelSerializer implements StructuredSerializer<ArticleModel> {
           specifiedType: const FullType(String)),
       'url',
       serializers.serialize(object.url, specifiedType: const FullType(String)),
-      'urlToImage',
-      serializers.serialize(object.urlToImage,
-          specifiedType: const FullType(String)),
       'publishedAt',
       serializers.serialize(object.publishedAt,
           specifiedType: const FullType(String)),
-      'content',
-      serializers.serialize(object.content,
-          specifiedType: const FullType(String)),
     ];
-
+    if (object.author != null) {
+      result
+        ..add('author')
+        ..add(serializers.serialize(object.author,
+            specifiedType: const FullType(String)));
+    }
+    if (object.urlToImage != null) {
+      result
+        ..add('urlToImage')
+        ..add(serializers.serialize(object.urlToImage,
+            specifiedType: const FullType(String)));
+    }
+    if (object.content != null) {
+      result
+        ..add('content')
+        ..add(serializers.serialize(object.content,
+            specifiedType: const FullType(String)));
+    }
     return result;
   }
 
   @override
-  ArticleModel deserialize(Serializers serializers, Iterable<Object> serialized,
+  ArticlesModel deserialize(
+      Serializers serializers, Iterable<Object> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new ArticleModelBuilder();
+    final result = new ArticlesModelBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -60,8 +69,7 @@ class _$ArticleModelSerializer implements StructuredSerializer<ArticleModel> {
       switch (key) {
         case 'source':
           result.source.replace(serializers.deserialize(value,
-                  specifiedType: const FullType(NewsSourceModel))
-              as NewsSourceModel);
+              specifiedType: const FullType(SourceModel)) as SourceModel);
           break;
         case 'author':
           result.author = serializers.deserialize(value,
@@ -98,9 +106,9 @@ class _$ArticleModelSerializer implements StructuredSerializer<ArticleModel> {
   }
 }
 
-class _$ArticleModel extends ArticleModel {
+class _$ArticlesModel extends ArticlesModel {
   @override
-  final NewsSourceModel source;
+  final SourceModel source;
   @override
   final String author;
   @override
@@ -116,10 +124,10 @@ class _$ArticleModel extends ArticleModel {
   @override
   final String content;
 
-  factory _$ArticleModel([void Function(ArticleModelBuilder) updates]) =>
-      (new ArticleModelBuilder()..update(updates)).build();
+  factory _$ArticlesModel([void Function(ArticlesModelBuilder) updates]) =>
+      (new ArticlesModelBuilder()..update(updates)).build();
 
-  _$ArticleModel._(
+  _$ArticlesModel._(
       {this.source,
       this.author,
       this.title,
@@ -130,42 +138,33 @@ class _$ArticleModel extends ArticleModel {
       this.content})
       : super._() {
     if (source == null) {
-      throw new BuiltValueNullFieldError('ArticleModel', 'source');
-    }
-    if (author == null) {
-      throw new BuiltValueNullFieldError('ArticleModel', 'author');
+      throw new BuiltValueNullFieldError('ArticlesModel', 'source');
     }
     if (title == null) {
-      throw new BuiltValueNullFieldError('ArticleModel', 'title');
+      throw new BuiltValueNullFieldError('ArticlesModel', 'title');
     }
     if (description == null) {
-      throw new BuiltValueNullFieldError('ArticleModel', 'description');
+      throw new BuiltValueNullFieldError('ArticlesModel', 'description');
     }
     if (url == null) {
-      throw new BuiltValueNullFieldError('ArticleModel', 'url');
-    }
-    if (urlToImage == null) {
-      throw new BuiltValueNullFieldError('ArticleModel', 'urlToImage');
+      throw new BuiltValueNullFieldError('ArticlesModel', 'url');
     }
     if (publishedAt == null) {
-      throw new BuiltValueNullFieldError('ArticleModel', 'publishedAt');
-    }
-    if (content == null) {
-      throw new BuiltValueNullFieldError('ArticleModel', 'content');
+      throw new BuiltValueNullFieldError('ArticlesModel', 'publishedAt');
     }
   }
 
   @override
-  ArticleModel rebuild(void Function(ArticleModelBuilder) updates) =>
+  ArticlesModel rebuild(void Function(ArticlesModelBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  ArticleModelBuilder toBuilder() => new ArticleModelBuilder()..replace(this);
+  ArticlesModelBuilder toBuilder() => new ArticlesModelBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is ArticleModel &&
+    return other is ArticlesModel &&
         source == other.source &&
         author == other.author &&
         title == other.title &&
@@ -194,7 +193,7 @@ class _$ArticleModel extends ArticleModel {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('ArticleModel')
+    return (newBuiltValueToStringHelper('ArticlesModel')
           ..add('source', source)
           ..add('author', author)
           ..add('title', title)
@@ -207,14 +206,13 @@ class _$ArticleModel extends ArticleModel {
   }
 }
 
-class ArticleModelBuilder
-    implements Builder<ArticleModel, ArticleModelBuilder> {
-  _$ArticleModel _$v;
+class ArticlesModelBuilder
+    implements Builder<ArticlesModel, ArticlesModelBuilder> {
+  _$ArticlesModel _$v;
 
-  NewsSourceModelBuilder _source;
-  NewsSourceModelBuilder get source =>
-      _$this._source ??= new NewsSourceModelBuilder();
-  set source(NewsSourceModelBuilder source) => _$this._source = source;
+  SourceModelBuilder _source;
+  SourceModelBuilder get source => _$this._source ??= new SourceModelBuilder();
+  set source(SourceModelBuilder source) => _$this._source = source;
 
   String _author;
   String get author => _$this._author;
@@ -244,9 +242,9 @@ class ArticleModelBuilder
   String get content => _$this._content;
   set content(String content) => _$this._content = content;
 
-  ArticleModelBuilder();
+  ArticlesModelBuilder();
 
-  ArticleModelBuilder get _$this {
+  ArticlesModelBuilder get _$this {
     if (_$v != null) {
       _source = _$v.source?.toBuilder();
       _author = _$v.author;
@@ -262,24 +260,24 @@ class ArticleModelBuilder
   }
 
   @override
-  void replace(ArticleModel other) {
+  void replace(ArticlesModel other) {
     if (other == null) {
       throw new ArgumentError.notNull('other');
     }
-    _$v = other as _$ArticleModel;
+    _$v = other as _$ArticlesModel;
   }
 
   @override
-  void update(void Function(ArticleModelBuilder) updates) {
+  void update(void Function(ArticlesModelBuilder) updates) {
     if (updates != null) updates(this);
   }
 
   @override
-  _$ArticleModel build() {
-    _$ArticleModel _$result;
+  _$ArticlesModel build() {
+    _$ArticlesModel _$result;
     try {
       _$result = _$v ??
-          new _$ArticleModel._(
+          new _$ArticlesModel._(
               source: source.build(),
               author: author,
               title: title,
@@ -295,7 +293,7 @@ class ArticleModelBuilder
         source.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
-            'ArticleModel', _$failedField, e.toString());
+            'ArticlesModel', _$failedField, e.toString());
       }
       rethrow;
     }

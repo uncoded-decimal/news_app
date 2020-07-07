@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/src/blocs/bloc.dart';
+import 'package:news_app/src/services/dio_http_service.dart';
 import 'package:news_app/src/ui/home_screen.dart';
 
 void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+  runApp(MaterialApp(
+    title: 'News App',
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+    ),
+    home: RepositoryProvider(
+      create: (BuildContext context) => DioHttpService(),
+      child: BlocProvider(
+        create: (BuildContext ctx) =>
+            NewsBloc(httpService: RepositoryProvider.of<DioHttpService>(ctx)),
+        child: HomeScreen(),
       ),
-      home: HomeScreen(),
-    );
-  }
+    ),
+  ));
 }
