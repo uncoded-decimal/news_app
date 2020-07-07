@@ -23,8 +23,10 @@ abstract class ArticlesModel
   String get author;
   @BuiltValueField(wireName: 'title')
   String get title;
+  @nullable
   @BuiltValueField(wireName: 'description')
   String get description;
+  @nullable
   @BuiltValueField(wireName: 'url')
   String get url;
   @nullable

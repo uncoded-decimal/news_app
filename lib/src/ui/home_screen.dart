@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/src/blocs/bloc.dart';
+import 'package:news_app/src/blocs/news_bloc/bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:news_app/src/blocs/news_feed_bloc/news_feed_bloc.dart';
+import 'package:news_app/src/ui/news_feed_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -30,38 +32,37 @@ class _HomeScreenState extends State<HomeScreen> {
           if (state is Loading) {
             return Center(child: CircularProgressIndicator());
           } else if (state is TopHeadlinesFetched) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                    "${state.newsModel.length} articles found for your location: ${state.country}"),
-                (state.newsModel.length <= 0)
-                    ? InkWell(
-                        onTap: () {
-                          Scaffold.of(context).showSnackBar(SnackBar(
-                            content: Text("Fetching top headlines for \"us\""),
-                            duration: Duration(
-                              seconds: 4,
-                            ),
-                          ));
-                          _bloc.add(FetchTopHeadlines("us"));
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.cancel,
-                              color: Colors.grey,
-                              size: 60,
-                            ),
-                            Text("Press to search news for US")
-                          ],
-                        ),
-                      )
-                    : Container(),
-              ],
-            );
+            return (state.newsModel.length <= 0)
+                ? Center(
+                    child: InkWell(
+                      onTap: () {
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text("Fetching top headlines for \"US\""),
+                          duration: Duration(
+                            seconds: 4,
+                          ),
+                        ));
+                        _bloc.add(FetchTopHeadlines("us"));
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: Colors.grey,
+                            size: 60,
+                          ),
+                          Text(
+                              "No articles were found for your location: ${state.country}\nPress icon to search news for US")
+                        ],
+                      ),
+                    ),
+                  )
+                : BlocProvider(
+                    create: (BuildContext context) =>
+                        NewsFeedBloc(state.newsModel),
+                    child: NewsFeed(),
+                  );
           } else if (state is Error) {
             return Center(
               child: InkWell(
@@ -111,6 +112,6 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Placemark> placemark = await Geolocator()
         .placemarkFromCoordinates(position.latitude, position.longitude);
     // placemark.forEach((element) {print("placemark = ${element.country}");});
-    return placemark.first.country.toLowerCase();
+    return placemark.first.country;
   }
 }

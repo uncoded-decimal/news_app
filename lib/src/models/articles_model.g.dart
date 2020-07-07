@@ -25,11 +25,6 @@ class _$ArticlesModelSerializer implements StructuredSerializer<ArticlesModel> {
       'title',
       serializers.serialize(object.title,
           specifiedType: const FullType(String)),
-      'description',
-      serializers.serialize(object.description,
-          specifiedType: const FullType(String)),
-      'url',
-      serializers.serialize(object.url, specifiedType: const FullType(String)),
       'publishedAt',
       serializers.serialize(object.publishedAt,
           specifiedType: const FullType(String)),
@@ -38,6 +33,18 @@ class _$ArticlesModelSerializer implements StructuredSerializer<ArticlesModel> {
       result
         ..add('author')
         ..add(serializers.serialize(object.author,
+            specifiedType: const FullType(String)));
+    }
+    if (object.description != null) {
+      result
+        ..add('description')
+        ..add(serializers.serialize(object.description,
+            specifiedType: const FullType(String)));
+    }
+    if (object.url != null) {
+      result
+        ..add('url')
+        ..add(serializers.serialize(object.url,
             specifiedType: const FullType(String)));
     }
     if (object.urlToImage != null) {
@@ -142,12 +149,6 @@ class _$ArticlesModel extends ArticlesModel {
     }
     if (title == null) {
       throw new BuiltValueNullFieldError('ArticlesModel', 'title');
-    }
-    if (description == null) {
-      throw new BuiltValueNullFieldError('ArticlesModel', 'description');
-    }
-    if (url == null) {
-      throw new BuiltValueNullFieldError('ArticlesModel', 'url');
     }
     if (publishedAt == null) {
       throw new BuiltValueNullFieldError('ArticlesModel', 'publishedAt');
