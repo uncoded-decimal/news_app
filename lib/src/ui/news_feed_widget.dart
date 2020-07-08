@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/src/blocs/news_feed_bloc/bloc.dart';
 import 'package:news_app/src/models/model.dart';
+import 'package:news_app/src/ui/news_tile.dart';
 import 'package:quiver/strings.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -59,7 +60,19 @@ class _NewsFeedState extends State<NewsFeed> {
     List<ArticlesModel> articles,
     Map<String, bool> articleSources,
   ) {
-    final size = MediaQuery.of(context).size;
+    // for pagination
+    // int loadCount = 10;
+    // List<ArticlesModel> lazyArticlesList = articles.sublist(0, loadCount);
+    // ScrollController lazyController = ScrollController();
+    // lazyController.addListener(() {
+    //   if (lazyController.offset == lazyController.position.maxScrollExtent) {
+    //     lazyArticlesList.addAll(articles.sublist(
+    //       lazyArticlesList.length,
+    //       lazyArticlesList.length + loadCount,
+    //     ));
+    //     setState(() {});
+    //   }
+    // });
     return Column(
       children: [
         //Search Bar
@@ -86,33 +99,22 @@ class _NewsFeedState extends State<NewsFeed> {
         Expanded(
           // flex: 14,
           child: Container(
+            padding: EdgeInsets.fromLTRB(2, 5, 2, 2),
+            color: Colors.grey[500],
             child: ListView.builder(
+              // controller: articles,
               itemCount: articles.length,
               itemBuilder: (context, index) {
+                if (index == articles.length &&
+                    index < articles.length) {
+                  return Container(
+                    child: CircularProgressIndicator(),
+                    alignment: Alignment.center,
+                  );
+                }
                 final element = articles.elementAt(index);
-                return InkWell(
-                  onTap: () async {
-                    if (await canLaunch(element.url)) {
-                      await launch(element.url);
-                    } else {
-                      throw 'Could not launch ${element.url}';
-                    }
-                  },
-                  child: ListTile(
-                    leading: isBlank(element.urlToImage)
-                        ? Container(
-                            child: Text("Image not found"),
-                            width: size.width / 5,
-                            height: size.height / 8,
-                          )
-                        : Image.network(
-                            element.urlToImage,
-                            width: size.width / 5,
-                            height: size.height / 8,
-                          ),
-                    title: Text(element.title),
-                    subtitle: Text(element.description ?? ""),
-                  ),
+                return NewsTile(
+                  articlesModel: element,
                 );
               },
             ),
@@ -132,24 +134,35 @@ class _NewsFeedState extends State<NewsFeed> {
         alignment: Alignment.centerLeft,
         color: Colors.grey[300],
         duration: Duration(milliseconds: 300),
-        height:
-            _showFilterDropdown ? MediaQuery.of(context).size.height / 2.2 : 50,
+        // height:
+        //     _showFilterDropdown ? MediaQuery.of(context).size.height / 2.2 : 50,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
               children: [
-                Expanded(child: Text(topic ?? "")),
-                IconButton(
-                    icon: Icon(Icons.filter),
+                SizedBox(width: 5,),
+                Expanded(child: Text(topic ?? "", style: TextStyle(color: Colors.grey[500], fontStyle: FontStyle.italic),)),
+                FlatButton(
+                    child: Column(
+                      children: [
+                        Icon(Icons.filter),
+                        Text("Filter"),
+                      ],
+                    ),
                     onPressed: () {
                       setState(() {
                         _showFilterDropdown = !_showFilterDropdown;
                       });
                     }),
-                IconButton(
-                  icon: Icon(Icons.refresh),
+                FlatButton(
+                  child: Column(
+                    children: [
+                      Icon(Icons.refresh),
+                      Text("Recents")
+                    ],
+                  ),
                   onPressed: () {
                     _newsFeedBloc.add(ShowRecents());
                   },
@@ -170,8 +183,9 @@ class _NewsFeedState extends State<NewsFeed> {
     Map<String, bool> articleSources,
   ) {
     return Container(
-      height: MediaQuery.of(context).size.height / 2.9,
-      padding: EdgeInsets.fromLTRB(5, 12, 5, 0),
+      // height: MediaQuery.of(context).size.height / 2.9,
+      padding: EdgeInsets.fromLTRB(5, 12, 5, 10),
+      color: Colors.grey[300],
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

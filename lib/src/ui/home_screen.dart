@@ -106,12 +106,18 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Since updating my Android Studio the geolocator plugin has
+  /// been crashing with an error. 
+  /// 
+  /// Follow the issue here:
+  /// https://github.com/Baseflow/flutter-geolocator/issues/465 
+  /// 
   Future<String> _fetchCountry() async {
-    Position position = await Geolocator()
-        .getLastKnownPosition(desiredAccuracy: LocationAccuracy.lowest);
-    List<Placemark> placemark = await Geolocator()
-        .placemarkFromCoordinates(position?.latitude, position?.longitude);
-    // placemark.forEach((element) {print("placemark = ${element.country}");});
-    return placemark.first.country;
+    // Position position = await Geolocator()
+    //     .getLastKnownPosition(desiredAccuracy: LocationAccuracy.lowest);
+    // List<Placemark> placemark = await Geolocator()
+    //     .placemarkFromCoordinates(position.latitude, position.longitude);
+    // return placemark.first.country;
+    return 'in';
   }
 }
