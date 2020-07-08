@@ -11,21 +11,33 @@ class FeedLoading extends NewsFeedState {
 class DefaultFeed extends NewsFeedState {
   final String topic;
   final List<ArticlesModel> articles;
+  final Map<String, bool> articleSources;
   DefaultFeed({
     this.topic,
     this.articles,
+    this.articleSources,
   });
   @override
-  List<Object> get props => [this.topic, this.articles];
+  List<Object> get props => [
+        this.topic,
+        this.articles,
+        this.articleSources,
+      ];
 }
 
-class SearchResults extends NewsFeedState {
-  final String query;
+class OperatedFeed extends NewsFeedState {
+  final String topic;
   final List<ArticlesModel> articles;
-  SearchResults({
-    this.query,
+  final Map<String, bool> articleSources;
+  OperatedFeed({
+    this.topic,
     this.articles,
+    this.articleSources,
   });
   @override
-  List<Object> get props => [this.query, this.articles];
+  List<Object> get props => [
+        this.topic,
+        this.articles,
+        this.articleSources,
+      ];
 }

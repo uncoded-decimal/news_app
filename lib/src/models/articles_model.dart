@@ -33,7 +33,7 @@ abstract class ArticlesModel
   @BuiltValueField(wireName: 'urlToImage')
   String get urlToImage;
   @BuiltValueField(wireName: 'publishedAt')
-  String get publishedAt;
+  DateTime get publishedAt;
   @nullable
   @BuiltValueField(wireName: 'content')
   String get content;

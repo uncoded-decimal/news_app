@@ -110,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Position position = await Geolocator()
         .getLastKnownPosition(desiredAccuracy: LocationAccuracy.lowest);
     List<Placemark> placemark = await Geolocator()
-        .placemarkFromCoordinates(position.latitude, position.longitude);
+        .placemarkFromCoordinates(position?.latitude, position?.longitude);
     // placemark.forEach((element) {print("placemark = ${element.country}");});
     return placemark.first.country;
   }

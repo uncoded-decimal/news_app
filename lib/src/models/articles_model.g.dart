@@ -27,7 +27,7 @@ class _$ArticlesModelSerializer implements StructuredSerializer<ArticlesModel> {
           specifiedType: const FullType(String)),
       'publishedAt',
       serializers.serialize(object.publishedAt,
-          specifiedType: const FullType(String)),
+          specifiedType: const FullType(DateTime)),
     ];
     if (object.author != null) {
       result
@@ -100,7 +100,7 @@ class _$ArticlesModelSerializer implements StructuredSerializer<ArticlesModel> {
           break;
         case 'publishedAt':
           result.publishedAt = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+              specifiedType: const FullType(DateTime)) as DateTime;
           break;
         case 'content':
           result.content = serializers.deserialize(value,
@@ -127,7 +127,7 @@ class _$ArticlesModel extends ArticlesModel {
   @override
   final String urlToImage;
   @override
-  final String publishedAt;
+  final DateTime publishedAt;
   @override
   final String content;
 
@@ -235,9 +235,9 @@ class ArticlesModelBuilder
   String get urlToImage => _$this._urlToImage;
   set urlToImage(String urlToImage) => _$this._urlToImage = urlToImage;
 
-  String _publishedAt;
-  String get publishedAt => _$this._publishedAt;
-  set publishedAt(String publishedAt) => _$this._publishedAt = publishedAt;
+  DateTime _publishedAt;
+  DateTime get publishedAt => _$this._publishedAt;
+  set publishedAt(DateTime publishedAt) => _$this._publishedAt = publishedAt;
 
   String _content;
   String get content => _$this._content;
