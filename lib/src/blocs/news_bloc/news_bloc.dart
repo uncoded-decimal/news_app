@@ -28,7 +28,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       yield TopHeadlinesFetched( models.toList(), country);
     } catch (e) {
       print(e);
-      yield Error("An error occured");
+      yield Error("An error occured: $e");
     }
   }
 
@@ -40,7 +40,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       yield GlobalSearchResultsObtained(models.toList(), query);
     } catch (e) {
       print(e);
-      yield Error("An error occured");
+      yield Error("An error occured: $e");
     }
   }
 }
