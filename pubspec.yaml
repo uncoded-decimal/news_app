@@ -31,7 +31,9 @@ dependencies:
 
   #location
   #removed because of incompability issues
-  # geolocator: ^5.3.2+2 
+  # geolocator: ^5.3.2+2
+  location: ^3.0.2
+  geocoding: ^1.0.0
 
 dev_dependencies:
   flutter_test:
