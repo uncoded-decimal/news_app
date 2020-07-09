@@ -22,4 +22,18 @@ class NewsService {
       });
     }
   }
+
+  Future<Response> fetchGlobalSearchResults({@required query}) async {
+    String path = "/everything?q=$query&apiKey=${Constants.newsApiKey}";
+    final response = await _httpService.handleGetRequestWithoutToken(path);
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return response;
+    } else {
+      throw Exception({
+        "statusCode": response.statusCode,
+        "statusMessage": response.statusMessage,
+        "message": "Unable to fetch search results",
+      });
+    }
+  }
 }

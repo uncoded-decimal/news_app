@@ -26,3 +26,13 @@ class TopHeadlinesFetched extends NewsState {
   @override
   List<Object> get props => [this.newsModel, this.country];
 }
+
+class GlobalSearchResultsObtained extends NewsState {
+  final List<ArticlesModel> newsModel;
+  final String query;
+
+  GlobalSearchResultsObtained(this.newsModel, this.query);
+
+  @override
+  List<Object> get props => [this.newsModel, this.query];
+}

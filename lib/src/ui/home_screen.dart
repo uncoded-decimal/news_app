@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:news_app/src/blocs/news_bloc/bloc.dart';
 // import 'package:geolocator/geolocator.dart';
 import 'package:news_app/src/blocs/news_feed_bloc/news_feed_bloc.dart';
 import 'package:news_app/src/ui/news_feed_widget.dart';
+import 'package:quiver/strings.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -14,19 +16,60 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   NewsBloc _bloc;
+  String _country;
+  TextEditingController _globalSearchController;
 
   @override
   void initState() {
     super.initState();
     _bloc = BlocProvider.of<NewsBloc>(context);
-    _fetchCountry().then((country) {
-      _bloc.add(FetchTopHeadlines(country));
+    _globalSearchController = TextEditingController();
+    _fetchCountry().then((result) {
+      _country = result;
+      _bloc.add(FetchTopHeadlines(result));
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+        child: SafeArea(
+          child: Container(
+            color: Colors.black,
+            child: Row(
+              children: [
+                SizedBox(width: 5),
+                Expanded(
+                    child: TextField(
+                  maxLines: 1,
+                  controller: _globalSearchController,
+                  decoration: InputDecoration(hintText: "Search all news"),
+                  style: TextStyle(color: Theme.of(context).accentColor),
+                  onChanged: (text) {
+                    if (isBlank(_globalSearchController.value.text)) {
+                      _bloc.add(FetchTopHeadlines(_country));
+                    }
+                  },
+                )), //global search widget
+                IconButton(
+                  icon: Icon(MdiIcons.searchWeb),
+                  onPressed: () => _bloc.add(
+                    FetchSearchResults(_globalSearchController.value.text),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(MdiIcons.refreshCircle),
+                  onPressed: () => _bloc.add(
+                    FetchTopHeadlines(_country),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        preferredSize: Size.fromHeight(60),
+      ),
       body: BlocConsumer<NewsBloc, NewsState>(
         builder: (context, state) {
           if (state is Loading) {
@@ -63,6 +106,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         NewsFeedBloc(state.newsModel),
                     child: NewsFeed(),
                   );
+          } else if (state is GlobalSearchResultsObtained) {
+            return BlocProvider(
+              create: (BuildContext context) => NewsFeedBloc(state.newsModel),
+              child: NewsFeed(),
+            );
           } else if (state is Error) {
             return Center(
               child: InkWell(
@@ -107,11 +155,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// Since updating my Android Studio the geolocator plugin has
-  /// been crashing with an error. 
-  /// 
+  /// been crashing with an error.
+  ///
   /// Follow the issue here:
-  /// https://github.com/Baseflow/flutter-geolocator/issues/465 
-  /// 
+  /// https://github.com/Baseflow/flutter-geolocator/issues/465
+  ///
   Future<String> _fetchCountry() async {
     // Position position = await Geolocator()
     //     .getLastKnownPosition(desiredAccuracy: LocationAccuracy.lowest);

@@ -10,3 +10,12 @@ class FetchTopHeadlines extends NewsEvent {
   @override
   List<Object> get props => [this.country];
 }
+
+class FetchSearchResults extends NewsEvent {
+  final String query;
+
+  FetchSearchResults(this.query);
+
+  @override
+  List<Object> get props => [this.query];
+}

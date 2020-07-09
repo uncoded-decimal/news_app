@@ -46,7 +46,10 @@ class _NewsTileState extends State<NewsTile> {
               children: [
                 Expanded(
                   child: isBlank(widget.articlesModel.urlToImage)
-                      ? Text('No image', style: TextStyle(color: Colors.white),)
+                      ? Text(
+                          'No image',
+                          style: TextStyle(color: Colors.white),
+                        )
                       : Image.network(
                           widget.articlesModel.urlToImage,
                           height: 100,
@@ -57,20 +60,52 @@ class _NewsTileState extends State<NewsTile> {
                   width: 5,
                 ),
                 Expanded(
-                  flex: 4,
-                  child: Text(widget.articlesModel.title,
-                      style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white))
-                ),
+                    flex: 4,
+                    child: Text(widget.articlesModel.title,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline6
+                            .copyWith(color: Colors.white))),
               ],
             ),
-            SizedBox(height: 5,),
+            SizedBox(
+              height: 5,
+            ),
             Text(
-              widget.articlesModel.description ?? widget.articlesModel.content ?? "",
-              style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),
+              widget.articlesModel.description ??
+                  widget.articlesModel.content ??
+                  "",
+              style: Theme.of(context)
+                  .textTheme
+                  .caption
+                  .copyWith(color: Colors.white),
+            ),
+            SizedBox(height: 2),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                _dateToString(widget.articlesModel.publishedAt),
+                style: Theme.of(context)
+                    .textTheme
+                    .caption
+                    .copyWith(color: Theme.of(context).accentColor),
+              ),
             )
           ],
         ),
       ),
     );
+  }
+
+  String _dateToString(DateTime datetime) {
+    if (datetime == null) return "";
+    final day = datetime.day;
+    final month = datetime.month;
+    final year = datetime.year;
+    final hours = datetime.hour;
+    final minutes = datetime.minute;
+    final check = (minutes % 10 == minutes) ? "0" : "";
+    // final seconds = datetime.second;
+    return "$day/$month/$year at $hours:$check$minutes hrs";
   }
 }

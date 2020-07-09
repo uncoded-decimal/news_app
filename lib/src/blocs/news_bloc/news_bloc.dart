@@ -15,6 +15,8 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
   Stream<NewsState> mapEventToState(NewsEvent event) async* {
     if (event is FetchTopHeadlines) {
       yield* _fetchTopHeadlines(event.country);
+    } else if (event is FetchSearchResults){
+      yield* _fetchSearchResults(event.query);
     }
   }
 
@@ -24,6 +26,18 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
       final response = await _newsService.fetchTopHeadlines(country: country.toLowerCase().substring(0,2));
       final models =  (response.data["articles"] as List<dynamic>).map((e) => ArticlesModel.fromMap(e));
       yield TopHeadlinesFetched( models.toList(), country);
+    } catch (e) {
+      print(e);
+      yield Error("An error occured");
+    }
+  }
+
+  Stream<NewsState> _fetchSearchResults(String query) async* {
+    yield Loading();
+    try {
+      final response = await _newsService.fetchGlobalSearchResults(query: query.toLowerCase());
+      final models =  (response.data["articles"] as List<dynamic>).map((e) => ArticlesModel.fromMap(e));
+      yield GlobalSearchResultsObtained(models.toList(), query);
     } catch (e) {
       print(e);
       yield Error("An error occured");

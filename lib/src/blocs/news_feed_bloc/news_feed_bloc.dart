@@ -5,7 +5,7 @@ import 'package:quiver/strings.dart';
 
 class NewsFeedBloc extends Bloc<NewsFeedEvent, NewsFeedState> {
   List<ArticlesModel> _articles;
-  List<ArticlesModel> _listToShow;
+  List<ArticlesModel> _listToShow = [];
   Map<String, bool> _articleSources = {};
 
   NewsFeedBloc(this._articles) : super(FeedLoading()) {
@@ -13,12 +13,12 @@ class NewsFeedBloc extends Bloc<NewsFeedEvent, NewsFeedState> {
     _articles.forEach((element) {
       _articleSources.putIfAbsent(element.source.name, () => true);
     });
+    _listToShow.addAll(this._articles);
   }
 
   @override
   Stream<NewsFeedState> mapEventToState(NewsFeedEvent event) async* {
     if (event is ShowDefaultFeed) {
-      _listToShow = this._articles;
       yield DefaultFeed(
           articles: _listToShow,
           topic: "Showing default feed",
@@ -106,7 +106,7 @@ class NewsFeedBloc extends Bloc<NewsFeedEvent, NewsFeedState> {
 
   Stream<NewsFeedState> _sortForRecents() async* {
     yield FeedLoading();
-    _listToShow.sort((a, b) => a.publishedAt.compareTo(b.publishedAt));
+    _listToShow.sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
     yield OperatedFeed(
       topic: "Viewing Recents",
       articles: _listToShow,
