@@ -27,7 +27,7 @@ class _NewsTileState extends State<NewsTile> {
         padding: EdgeInsets.all(5),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(5)),
-            color: Colors.grey[100],
+            color: Colors.black,
             boxShadow: [
               BoxShadow(
                 offset: Offset(1, 1),
@@ -42,13 +42,15 @@ class _NewsTileState extends State<NewsTile> {
           children: [
             Row(
               mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: isBlank(widget.articlesModel.urlToImage)
-                      ? Text('No image')
+                      ? Text('No image', style: TextStyle(color: Colors.white),)
                       : Image.network(
                           widget.articlesModel.urlToImage,
-                          fit: BoxFit.contain,
+                          height: 100,
+                          fit: BoxFit.cover,
                         ),
                 ),
                 SizedBox(
@@ -57,13 +59,14 @@ class _NewsTileState extends State<NewsTile> {
                 Expanded(
                   flex: 4,
                   child: Text(widget.articlesModel.title,
-                      style: Theme.of(context).textTheme.headline6),
+                      style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white))
                 ),
               ],
             ),
+            SizedBox(height: 5,),
             Text(
-              widget.articlesModel.description,
-              style: Theme.of(context).textTheme.caption,
+              widget.articlesModel.description ?? widget.articlesModel.content ?? "",
+              style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),
             )
           ],
         ),

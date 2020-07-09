@@ -7,10 +7,7 @@ import 'package:news_app/src/ui/home_screen.dart';
 void main() {
   runApp(MaterialApp(
     title: 'News App',
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
-      visualDensity: VisualDensity.adaptivePlatformDensity,
-    ),
+    theme: ThemeData.dark(),
     home: RepositoryProvider(
       create: (BuildContext context) => DioHttpService(),
       child: BlocProvider(

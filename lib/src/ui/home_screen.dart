@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/src/blocs/news_bloc/bloc.dart';
-import 'package:geolocator/geolocator.dart';
+// import 'package:geolocator/geolocator.dart';
 import 'package:news_app/src/blocs/news_feed_bloc/news_feed_bloc.dart';
 import 'package:news_app/src/ui/news_feed_widget.dart';
 

@@ -4,7 +4,6 @@ import 'package:news_app/src/blocs/news_feed_bloc/bloc.dart';
 import 'package:news_app/src/models/model.dart';
 import 'package:news_app/src/ui/news_tile.dart';
 import 'package:quiver/strings.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class NewsFeed extends StatefulWidget {
   NewsFeed({
@@ -20,6 +19,11 @@ class _NewsFeedState extends State<NewsFeed> {
   TextEditingController _searchController;
   bool _showFilterDropdown = false;
   List<String> listOfArticleSources = [];
+  List<ArticlesModel> articles = [];
+  List<ArticlesModel> articlesToShow = [];
+  ScrollController _scrollController = ScrollController();
+  int page = 1;
+  int loadSize = 10;
 
   @override
   void initState() {
@@ -27,6 +31,18 @@ class _NewsFeedState extends State<NewsFeed> {
     _newsFeedBloc = BlocProvider.of<NewsFeedBloc>(context)
       ..add(ShowDefaultFeed());
     _searchController = TextEditingController();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        _onScrollEnd();
+      }
+    });
+  }
+
+  //actions to perform when end of the list is reached
+  void _onScrollEnd() {
+    page++;
+    setState(() {});
   }
 
   @override
@@ -37,11 +53,22 @@ class _NewsFeedState extends State<NewsFeed> {
           if (state is FeedLoading) {
             return CircularProgressIndicator();
           } else if (state is DefaultFeed) {
-            return _feedBody(state.topic, state.articles, state.articleSources);
+            this.articles = state.articles;
+            articlesToShow = articles.sublist(
+                0,
+                (page * loadSize > articles.length)
+                    ? articles.length
+                    : page * loadSize);
+            return _feedBody(state.topic, state.articleSources);
           } else if (state is OperatedFeed) {
+            this.articles = state.articles;
+            articlesToShow = articles.sublist(
+                0,
+                (articles.length >= page * loadSize)
+                    ? page * loadSize
+                    : articles.length);
             return _feedBody(
               state.topic,
-              state.articles,
               state.articleSources,
             );
           } else {
@@ -57,22 +84,8 @@ class _NewsFeedState extends State<NewsFeed> {
 
   Widget _feedBody(
     String topic,
-    List<ArticlesModel> articles,
     Map<String, bool> articleSources,
   ) {
-    // for pagination
-    // int loadCount = 10;
-    // List<ArticlesModel> lazyArticlesList = articles.sublist(0, loadCount);
-    // ScrollController lazyController = ScrollController();
-    // lazyController.addListener(() {
-    //   if (lazyController.offset == lazyController.position.maxScrollExtent) {
-    //     lazyArticlesList.addAll(articles.sublist(
-    //       lazyArticlesList.length,
-    //       lazyArticlesList.length + loadCount,
-    //     ));
-    //     setState(() {});
-    //   }
-    // });
     return Column(
       children: [
         //Search Bar
@@ -82,9 +95,11 @@ class _NewsFeedState extends State<NewsFeed> {
           decoration: InputDecoration(hintText: "Search through current feed"),
           onChanged: (currentText) {
             if (isEmpty(_searchController.value.text)) {
+              page = 1;
               _newsFeedBloc.add(ShowDefaultFeed());
             } else {
               final searchText = _searchController.value.text;
+              page = 1;
               _newsFeedBloc.add(SearchFeed(query: searchText));
             }
           },
@@ -92,7 +107,6 @@ class _NewsFeedState extends State<NewsFeed> {
         //Topics Bar
         _topicsBar(
           topic,
-          articles,
           articleSources,
         ),
         //News Feed
@@ -102,17 +116,21 @@ class _NewsFeedState extends State<NewsFeed> {
             padding: EdgeInsets.fromLTRB(2, 5, 2, 2),
             color: Colors.grey[500],
             child: ListView.builder(
-              // controller: articles,
-              itemCount: articles.length,
+              controller: _scrollController,
+              itemCount: articlesToShow.length + 1,
               itemBuilder: (context, index) {
-                if (index == articles.length &&
-                    index < articles.length) {
+                if (index >= articles.length) {
+                  //end of the parent list has been reached
+                  //but the child list expects more
+                  return Container();
+                } else if (index == articlesToShow.length) {
                   return Container(
+                    margin: EdgeInsets.symmetric(vertical: 10),
                     child: CircularProgressIndicator(),
                     alignment: Alignment.center,
                   );
                 }
-                final element = articles.elementAt(index);
+                final element = articlesToShow.elementAt(index);
                 return NewsTile(
                   articlesModel: element,
                 );
@@ -126,7 +144,6 @@ class _NewsFeedState extends State<NewsFeed> {
 
   Widget _topicsBar(
     String topic,
-    List<ArticlesModel> articles,
     Map<String, bool> articleSources,
   ) =>
       AnimatedContainer(
@@ -134,21 +151,33 @@ class _NewsFeedState extends State<NewsFeed> {
         alignment: Alignment.centerLeft,
         color: Colors.grey[300],
         duration: Duration(milliseconds: 300),
-        // height:
-        //     _showFilterDropdown ? MediaQuery.of(context).size.height / 2.2 : 50,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
               children: [
-                SizedBox(width: 5,),
-                Expanded(child: Text(topic ?? "", style: TextStyle(color: Colors.grey[500], fontStyle: FontStyle.italic),)),
+                SizedBox(
+                  width: 5,
+                ),
+                Expanded(
+                    child: Text(
+                  topic ?? "",
+                  style: TextStyle(
+                      color: Colors.grey[500], fontStyle: FontStyle.italic),
+                )),
                 FlatButton(
                     child: Column(
                       children: [
-                        Icon(Icons.filter),
-                        Text("Filter"),
+                        Icon(
+                          Icons.filter,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        Text(
+                          "Filter",
+                          style:
+                              TextStyle(color: Theme.of(context).primaryColor),
+                        ),
                       ],
                     ),
                     onPressed: () {
@@ -159,11 +188,16 @@ class _NewsFeedState extends State<NewsFeed> {
                 FlatButton(
                   child: Column(
                     children: [
-                      Icon(Icons.refresh),
-                      Text("Recents")
+                      Icon(Icons.refresh,
+                          color: Theme.of(context).primaryColor),
+                      Text(
+                        "Recents",
+                        style: TextStyle(color: Theme.of(context).primaryColor),
+                      )
                     ],
                   ),
                   onPressed: () {
+                    page = 1;
                     _newsFeedBloc.add(ShowRecents());
                   },
                 ),
@@ -185,7 +219,7 @@ class _NewsFeedState extends State<NewsFeed> {
     return Container(
       // height: MediaQuery.of(context).size.height / 2.9,
       padding: EdgeInsets.fromLTRB(5, 12, 5, 10),
-      color: Colors.grey[300],
+      color: Colors.grey[500],
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,16 +235,21 @@ class _NewsFeedState extends State<NewsFeed> {
               itemBuilder: (context, index) {
                 final articleSource = articleSources.keys.elementAt(index);
                 return CheckboxListTile(
-                    title: Text(articleSource),
+                    title: Text(
+                      articleSource,
+                      style: TextStyle(color: Colors.grey[700]),
+                    ),
                     value: articleSources[articleSource],
                     dense: true,
                     onChanged: (value) {
                       setState(() {
                         if (!articleSources[articleSource]) {
+                          page = 1;
                           //add the current news source
                           _newsFeedBloc
                               .add(FilterFeed(selectedSource: articleSource));
                         } else {
+                          page = 1;
                           _newsFeedBloc
                               .add(RemoveFilter(selectedSource: articleSource));
                         }
