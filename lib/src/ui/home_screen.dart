@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:location/location.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:news_app/src/blocs/news_bloc/bloc.dart';
-// import 'package:geolocator/geolocator.dart';
 import 'package:news_app/src/blocs/news_feed_bloc/news_feed_bloc.dart';
 import 'package:news_app/src/ui/news_feed_widget.dart';
 import 'package:quiver/strings.dart';
@@ -156,26 +155,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Since updating my Android Studio the geolocator plugin has
-  /// been crashing with an error.
-  ///
-  /// Follow the issue here:
-  /// https://github.com/Baseflow/flutter-geolocator/issues/465
-  ///
   Future<String> _fetchCountryCode() async {
-    // Position position = await Geolocator()
-    //     .getLastKnownPosition(desiredAccuracy: LocationAccuracy.lowest);
-    // List<Placemark> placemark = await Geolocator()
-    //     .placemarkFromCoordinates(position.latitude, position.longitude);
-    // return placemark.first.country;
-    // return 'in';
-
     Location location = new Location();
-
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
     LocationData _locationData;
-
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
       _serviceEnabled = await location.requestService();
@@ -183,7 +167,6 @@ class _HomeScreenState extends State<HomeScreen> {
         return _fetchCountryCode();
       }
     }
-
     _permissionGranted = await location.hasPermission();
     if (_permissionGranted == PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
@@ -193,7 +176,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     _locationData = await location.getLocation();
-
     final locationObtained = await placemarkFromCoordinates(
         _locationData.latitude, _locationData.longitude);
     print(locationObtained.first.isoCountryCode);
