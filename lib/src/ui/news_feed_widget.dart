@@ -4,6 +4,7 @@ import 'package:news_app/src/blocs/news_feed_bloc/bloc.dart';
 import 'package:news_app/src/models/model.dart';
 import 'package:news_app/src/ui/news_tile.dart';
 import 'package:quiver/strings.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class NewsFeed extends StatefulWidget {
   NewsFeed({
@@ -89,20 +90,24 @@ class _NewsFeedState extends State<NewsFeed> {
     return Column(
       children: [
         //Search Bar
-        TextField(
-          maxLines: 1,
-          controller: _searchController,
-          decoration: InputDecoration(hintText: "Search through current feed"),
-          onChanged: (currentText) {
-            if (isEmpty(_searchController.value.text)) {
-              page = 1;
-              _newsFeedBloc.add(ShowDefaultFeed());
-            } else {
-              final searchText = _searchController.value.text;
-              page = 1;
-              _newsFeedBloc.add(SearchFeed(query: searchText));
-            }
-          },
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: TextField(
+            maxLines: 1,
+            controller: _searchController,
+            decoration: InputDecoration(hintText: "Search through current feed"),
+            style: TextStyle(color: Theme.of(context).accentColor),
+            onChanged: (currentText) {
+              if (isEmpty(_searchController.value.text)) {
+                page = 1;
+                _newsFeedBloc.add(ShowDefaultFeed());
+              } else {
+                final searchText = _searchController.value.text;
+                page = 1;
+                _newsFeedBloc.add(SearchFeed(query: searchText));
+              }
+            },
+          ),
         ),
         //Topics Bar
         _topicsBar(
@@ -170,8 +175,10 @@ class _NewsFeedState extends State<NewsFeed> {
                     child: Column(
                       children: [
                         Icon(
-                          Icons.filter,
-                          color: Theme.of(context).primaryColor,
+                          MdiIcons.filter,
+                          color: _showFilterDropdown
+                              ? Theme.of(context).accentColor
+                              : Theme.of(context).primaryColor,
                         ),
                         Text(
                           "Filter",
@@ -188,7 +195,7 @@ class _NewsFeedState extends State<NewsFeed> {
                 FlatButton(
                   child: Column(
                     children: [
-                      Icon(Icons.refresh,
+                      Icon(MdiIcons.sort,
                           color: Theme.of(context).primaryColor),
                       Text(
                         "Recents",
