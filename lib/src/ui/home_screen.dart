@@ -179,6 +179,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final locationObtained = await placemarkFromCoordinates(
         _locationData.latitude, _locationData.longitude);
     print(locationObtained.first.isoCountryCode);
-    return locationObtained.first.isoCountryCode;
+    return locationObtained.first.isoCountryCode ?? "India";
   }
 }
