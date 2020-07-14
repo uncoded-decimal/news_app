@@ -7,6 +7,7 @@ import 'package:news_app/src/blocs/news_feed_bloc/news_feed_bloc.dart';
 import 'package:news_app/src/ui/news_feed_widget.dart';
 import 'package:quiver/strings.dart';
 import 'package:geocoding/geocoding.dart';
+import 'dart:math' as math;
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -37,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: PreferredSize(
         child: SafeArea(
           child: Container(
-            color: Colors.black,
+            // color: C,
             child: Row(
               children: [
                 SizedBox(width: 5),
@@ -45,31 +46,51 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: TextField(
                   maxLines: 1,
                   controller: _globalSearchController,
-                  decoration: InputDecoration(hintText: "Search all news"),
+                  decoration: InputDecoration(
+                    hintText: "Search all news",
+                    contentPadding: EdgeInsets.zero,
+                    suffix: isEmpty(_globalSearchController.value.text)
+                        ? IconButton(
+                            icon: Icon(MdiIcons.searchWeb),
+                            onPressed: () {
+                              if (isBlank(_globalSearchController.value.text)) {
+                                _bloc.add(FetchSearchResults(
+                                    _globalSearchController.value.text));
+                              }
+                            },
+                          )
+                        : IconButton(
+                            icon: Transform.rotate(
+                                angle: math.pi / 4, child: Icon(MdiIcons.plus)),
+                            onPressed: () {
+                              _globalSearchController.clear();
+                            },
+                          ),
+                  ),
                   style: TextStyle(color: Theme.of(context).accentColor),
                   onChanged: (text) {
+                    setState(() {});
+                  },
+                  textInputAction: TextInputAction.go,
+                  onSubmitted: (text) {
                     if (isBlank(_globalSearchController.value.text)) {
-                      _bloc.add(FetchTopHeadlines(_country));
+                      _bloc.add(FetchSearchResults(
+                          _globalSearchController.value.text));
                     }
                   },
-                )), //global search widget
-                IconButton(
-                  icon: Icon(MdiIcons.searchWeb),
-                  onPressed: () => _bloc.add(
-                    FetchSearchResults(_globalSearchController.value.text),
-                  ),
-                ),
+                )),
                 IconButton(
                   icon: Icon(MdiIcons.refreshCircle),
                   onPressed: () => _bloc.add(
                     FetchTopHeadlines(_country),
                   ),
+                  tooltip: "Refresh feed",
                 ),
               ],
             ),
           ),
         ),
-        preferredSize: Size.fromHeight(60),
+        preferredSize: Size.fromHeight(50),
       ),
       body: BlocConsumer<NewsBloc, NewsState>(
         builder: (context, state) {
@@ -179,6 +200,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final locationObtained = await placemarkFromCoordinates(
         _locationData.latitude, _locationData.longitude);
     print(locationObtained.first.isoCountryCode);
-    return locationObtained.first.isoCountryCode ?? "India";
+    return locationObtained.first.isoCountryCode;
   }
 }

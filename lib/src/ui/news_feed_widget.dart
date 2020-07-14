@@ -5,6 +5,7 @@ import 'package:news_app/src/models/model.dart';
 import 'package:news_app/src/ui/news_tile.dart';
 import 'package:quiver/strings.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'dart:math' as math;
 
 class NewsFeed extends StatefulWidget {
   NewsFeed({
@@ -89,37 +90,12 @@ class _NewsFeedState extends State<NewsFeed> {
   ) {
     return Column(
       children: [
-        //Search Bar
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: TextField(
-            maxLines: 1,
-            controller: _searchController,
-            decoration: InputDecoration(hintText: "Search through current feed"),
-            style: TextStyle(color: Theme.of(context).accentColor),
-            onChanged: (currentText) {
-              if (isEmpty(_searchController.value.text)) {
-                page = 1;
-                _newsFeedBloc.add(ShowDefaultFeed());
-              } else {
-                final searchText = _searchController.value.text;
-                page = 1;
-                _newsFeedBloc.add(SearchFeed(query: searchText));
-              }
-            },
-          ),
-        ),
-        //Topics Bar
-        _topicsBar(
-          topic,
-          articleSources,
-        ),
         //News Feed
         Expanded(
           // flex: 14,
           child: Container(
-            padding: EdgeInsets.fromLTRB(2, 5, 2, 2),
-            color: Colors.grey[500],
+            padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+            color: Colors.black,
             child: ListView.builder(
               controller: _scrollController,
               itemCount: articlesToShow.length + 1,
@@ -143,6 +119,11 @@ class _NewsFeedState extends State<NewsFeed> {
             ),
           ),
         ),
+        //Topics Bar
+        _topicsBar(
+          topic,
+          articleSources,
+        ),
       ],
     );
   }
@@ -154,7 +135,7 @@ class _NewsFeedState extends State<NewsFeed> {
       AnimatedContainer(
         width: double.infinity,
         alignment: Alignment.centerLeft,
-        color: Colors.grey[300],
+        color: Colors.grey[800],
         duration: Duration(milliseconds: 300),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -162,51 +143,80 @@ class _NewsFeedState extends State<NewsFeed> {
           children: [
             Row(
               children: [
-                SizedBox(
-                  width: 5,
+                //Search Bar
+                Flexible(
+                  child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: TextField(
+                        maxLines: 1,
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: "Search all news",
+                          contentPadding: EdgeInsets.zero,
+                          suffix: isEmpty(_searchController.value.text)
+                              ? IconButton(
+                                  icon: Icon(MdiIcons.searchWeb),
+                                  onPressed: () {
+                                    if (isBlank(_searchController.value.text)) {
+                                      _newsFeedBloc.add(ShowDefaultFeed());
+                                    }
+                                  },
+                                )
+                              : IconButton(
+                                  icon: Transform.rotate(
+                                      angle: math.pi / 4,
+                                      child: Icon(MdiIcons.plus)),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                  },
+                                ),
+                        ),
+                        style: TextStyle(color: Theme.of(context).accentColor),
+                        onChanged: (text) {
+                          setState(() {});
+                          if (isEmpty(_searchController.value.text)) {
+                            page = 1;
+                            _newsFeedBloc.add(ShowDefaultFeed());
+                          } else {
+                            page = 1;
+                            _newsFeedBloc.add(SearchFeed(
+                                query: _searchController.value.text));
+                          }
+                        },
+                        textInputAction: TextInputAction.go,
+                        onSubmitted: (text) {
+                          if (isBlank(_searchController.value.text)) {
+                            page = 1;
+                            _newsFeedBloc.add(SearchFeed(
+                                query: _searchController.value.text));
+                          }
+                        },
+                      )
+                      ),
                 ),
-                Expanded(
-                    child: Text(
-                  topic ?? "",
-                  style: TextStyle(
-                      color: Colors.grey[500], fontStyle: FontStyle.italic),
-                )),
-                FlatButton(
-                    child: Column(
-                      children: [
-                        Icon(
-                          MdiIcons.filter,
-                          color: _showFilterDropdown
-                              ? Theme.of(context).accentColor
-                              : Theme.of(context).primaryColor,
-                        ),
-                        Text(
-                          "Filter",
-                          style:
-                              TextStyle(color: Theme.of(context).primaryColor),
-                        ),
-                      ],
+                IconButton(
+                    tooltip: "Filter",
+                    icon: Icon(
+                      MdiIcons.filter,
+                      color: _showFilterDropdown
+                          ? Theme.of(context).accentColor
+                          : Theme.of(context).primaryColor,
                     ),
                     onPressed: () {
                       setState(() {
                         _showFilterDropdown = !_showFilterDropdown;
                       });
                     }),
-                FlatButton(
-                  child: Column(
-                    children: [
-                      Icon(MdiIcons.sort,
-                          color: Theme.of(context).primaryColor),
-                      Text(
-                        "Recents",
-                        style: TextStyle(color: Theme.of(context).primaryColor),
-                      )
-                    ],
+                IconButton(
+                  icon: Icon(
+                    MdiIcons.sort,
+                    color: Theme.of(context).primaryColor,
                   ),
                   onPressed: () {
                     page = 1;
                     _newsFeedBloc.add(ShowRecents());
                   },
+                  tooltip: "Recents",
                 ),
               ],
             ),
@@ -224,7 +234,6 @@ class _NewsFeedState extends State<NewsFeed> {
     Map<String, bool> articleSources,
   ) {
     return Container(
-      // height: MediaQuery.of(context).size.height / 2.9,
       padding: EdgeInsets.fromLTRB(5, 12, 5, 10),
       color: Colors.grey[500],
       child: Column(

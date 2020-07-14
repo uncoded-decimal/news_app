@@ -23,37 +23,39 @@ class _NewsTileState extends State<NewsTile> {
         }
       },
       child: Container(
-        margin: EdgeInsets.all(3),
-        padding: EdgeInsets.all(5),
+        margin: EdgeInsets.all(5),
+        padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-            color: Colors.black,
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+            color: Colors.black87,
             boxShadow: [
               BoxShadow(
-                offset: Offset(1, 1),
-                color: Colors.blue[100],
-              ),
-              BoxShadow(
-                offset: Offset(-1, -1),
-                color: Colors.grey[200],
-              ),
+                  color: Colors.grey[200],
+                  spreadRadius: 0.5,
+                  blurRadius: 2,
+                  offset: Offset(0, 1.5)),
             ]),
         child: Column(
           children: [
             Row(
               mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
+                  flex: 2,
                   child: isBlank(widget.articlesModel.urlToImage)
                       ? Text(
                           'No image',
                           style: TextStyle(color: Colors.white),
                         )
-                      : Image.network(
-                          widget.articlesModel.urlToImage,
-                          height: 100,
-                          fit: BoxFit.cover,
+                      : ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          child: Image.network(
+                            widget.articlesModel.urlToImage,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                 ),
                 SizedBox(
@@ -62,10 +64,9 @@ class _NewsTileState extends State<NewsTile> {
                 Expanded(
                     flex: 4,
                     child: Text(widget.articlesModel.title,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline6
-                            .copyWith(color: Colors.white))),
+                        style: Theme.of(context).textTheme.headline6
+                        // .copyWith(color: Colors.white),
+                        )),
               ],
             ),
             SizedBox(
@@ -79,8 +80,10 @@ class _NewsTileState extends State<NewsTile> {
                   .textTheme
                   .caption
                   .copyWith(color: Colors.white),
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
             ),
-            SizedBox(height: 2),
+            SizedBox(height: 5),
             Align(
               alignment: Alignment.bottomLeft,
               child: Text(
