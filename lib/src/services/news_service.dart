@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:news_app/src/constants.dart';
-import 'package:news_app/src/services/dio_http_service.dart';
+import 'package:Headlines/src/constants.dart';
+import 'package:Headlines/src/services/dio_http_service.dart';
 
 class NewsService {
   final DioHttpService _httpService;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/src/blocs/news_bloc/bloc.dart';
-import 'package:news_app/src/models/articles_model.dart';
-import 'package:news_app/src/services/dio_http_service.dart';
-import 'package:news_app/src/services/news_service.dart';
+import 'package:Headlines/src/blocs/news_bloc/bloc.dart';
+import 'package:Headlines/src/models/articles_model.dart';
+import 'package:Headlines/src/services/dio_http_service.dart';
+import 'package:Headlines/src/services/news_service.dart';
 import 'package:quiver/strings.dart';
 
 class NewsBloc extends Bloc<NewsEvent, NewsState> {
@@ -42,6 +42,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
   Stream<NewsState> _fetchSearchResults(String query) async* {
     yield Loading();
     try {
+      print("performing search for $query");
       final response = await _newsService.fetchGlobalSearchResults(
           query: query.toLowerCase());
       final models = (response.data["articles"] as List<dynamic>)

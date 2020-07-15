@@ -1,4 +1,4 @@
-import 'package:news_app/src/models/articles_model.dart';
+import 'package:Headlines/src/models/model.dart';
 import 'package:flutter/material.dart';
 import 'package:quiver/strings.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -42,14 +42,11 @@ class _NewsTileState extends State<NewsTile> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  flex: 2,
-                  child: isBlank(widget.articlesModel.urlToImage)
-                      ? Text(
-                          'No image',
-                          style: TextStyle(color: Colors.white),
-                        )
-                      : ClipRRect(
+                isBlank(widget.articlesModel.urlToImage)
+                    ? Container()
+                    : Expanded(
+                        flex: 2,
+                        child: ClipRRect(
                           borderRadius: BorderRadius.all(Radius.circular(5)),
                           child: Image.network(
                             widget.articlesModel.urlToImage,
@@ -57,7 +54,7 @@ class _NewsTileState extends State<NewsTile> {
                             fit: BoxFit.cover,
                           ),
                         ),
-                ),
+                      ),
                 SizedBox(
                   width: 5,
                 ),

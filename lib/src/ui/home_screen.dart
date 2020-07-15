@@ -1,10 +1,11 @@
+import 'package:Headlines/src/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:location/location.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:news_app/src/blocs/news_bloc/bloc.dart';
-import 'package:news_app/src/blocs/news_feed_bloc/news_feed_bloc.dart';
-import 'package:news_app/src/ui/news_feed_widget.dart';
+import 'package:Headlines/src/blocs/news_bloc/bloc.dart';
+import 'package:Headlines/src/blocs/news_feed_bloc/news_feed_bloc.dart';
+import 'package:Headlines/src/ui/news_feed_widget.dart';
 import 'package:quiver/strings.dart';
 import 'package:geocoding/geocoding.dart';
 import 'dart:math' as math;
@@ -38,10 +39,14 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: PreferredSize(
         child: SafeArea(
           child: Container(
-            // color: C,
             child: Row(
               children: [
-                SizedBox(width: 5),
+                SizedBox(width: 8),
+                CircleAvatar(
+                  backgroundImage: AssetImage(Constants.appIcon),
+                  radius: 15,
+                ),
+                SizedBox(width: 10),
                 Expanded(
                     child: TextField(
                   maxLines: 1,
@@ -71,20 +76,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   onChanged: (text) {
                     setState(() {});
                   },
-                  textInputAction: TextInputAction.go,
+                  textInputAction: TextInputAction.done,
                   onSubmitted: (text) {
-                    if (isBlank(_globalSearchController.value.text)) {
+                    if (isNotBlank(_globalSearchController.value.text)) {
                       _bloc.add(FetchSearchResults(
                           _globalSearchController.value.text));
                     }
                   },
                 )),
                 IconButton(
-                  icon: Icon(MdiIcons.refreshCircle),
+                  icon: Icon(MdiIcons.home),
                   onPressed: () => _bloc.add(
                     FetchTopHeadlines(_country),
                   ),
-                  tooltip: "Refresh feed",
+                  tooltip: "Headlines",
                 ),
               ],
             ),

@@ -1,6 +1,6 @@
-import 'package:news_app/src/blocs/news_feed_bloc/bloc.dart';
+import 'package:Headlines/src/blocs/news_feed_bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/src/models/model.dart';
+import 'package:Headlines/src/models/model.dart';
 import 'package:quiver/strings.dart';
 
 class NewsFeedBloc extends Bloc<NewsFeedEvent, NewsFeedState> {

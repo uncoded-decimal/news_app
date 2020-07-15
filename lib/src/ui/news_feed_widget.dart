@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/src/blocs/news_feed_bloc/bloc.dart';
-import 'package:news_app/src/models/model.dart';
-import 'package:news_app/src/ui/news_tile.dart';
+import 'package:Headlines/src/blocs/news_feed_bloc/bloc.dart';
+import 'package:Headlines/src/models/model.dart';
+import 'package:Headlines/src/ui/news_tile.dart';
 import 'package:quiver/strings.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'dart:math' as math;
@@ -151,7 +151,7 @@ class _NewsFeedState extends State<NewsFeed> {
                         maxLines: 1,
                         controller: _searchController,
                         decoration: InputDecoration(
-                          hintText: "Search all news",
+                          hintText: "Search current feed",
                           contentPadding: EdgeInsets.zero,
                           suffix: isEmpty(_searchController.value.text)
                               ? IconButton(
