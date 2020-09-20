@@ -1,14 +1,15 @@
-import 'package:Headlines/src/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:math' as math;
+import 'package:Headlines/src/blocs/news_bloc/bloc.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:location/location.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:Headlines/src/blocs/news_bloc/bloc.dart';
-import 'package:Headlines/src/blocs/news_feed_bloc/news_feed_bloc.dart';
-import 'package:Headlines/src/ui/news_feed_widget.dart';
 import 'package:quiver/strings.dart';
-import 'package:geocoding/geocoding.dart';
-import 'dart:math' as math;
+
+import '../blocs/news_bloc/news_states.dart';
+import '../constants.dart';
+import 'news_tile.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -19,8 +20,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   NewsBloc _bloc;
-  String _country;
   TextEditingController _globalSearchController;
+  String _country;
 
   @override
   void initState() {
@@ -33,10 +34,34 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
+  Future<String> _fetchCountryCode() async {
+    Location location = new Location();
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return _fetchCountryCode();
+      }
+    }
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return _fetchCountryCode();
+      }
+    }
+
+    _locationData = await location.getLocation();
+    final locationObtained = await placemarkFromCoordinates(
+        _locationData.latitude, _locationData.longitude);
+    print(locationObtained.first.isoCountryCode);
+    return locationObtained.first.isoCountryCode;
+  }
+
+  Widget _appBar() => PreferredSize(
         child: SafeArea(
           child: Container(
             child: Row(
@@ -96,115 +121,114 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         preferredSize: Size.fromHeight(50),
-      ),
-      body: BlocConsumer<NewsBloc, NewsState>(
-        builder: (context, state) {
-          if (state is Loading) {
-            return Center(child: CircularProgressIndicator());
-          } else if (state is TopHeadlinesFetched) {
-            return (state.newsModel.length <= 0)
-                ? Center(
-                    child: InkWell(
-                      onTap: () {
-                        Scaffold.of(context).showSnackBar(SnackBar(
-                          content: Text("Fetching top headlines for \"US\""),
-                          duration: Duration(
-                            seconds: 4,
-                          ),
-                        ));
-                        _bloc.add(FetchTopHeadlines("us"));
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            color: Colors.grey,
-                            size: 60,
-                          ),
-                          Text(
-                              "No articles were found for your location: ${state.country}\nPress icon to search news for US")
-                        ],
-                      ),
-                    ),
-                  )
-                : BlocProvider(
-                    create: (BuildContext context) =>
-                        NewsFeedBloc(state.newsModel),
-                    child: NewsFeed(),
-                  );
-          } else if (state is GlobalSearchResultsObtained) {
-            return BlocProvider(
-              create: (BuildContext context) => NewsFeedBloc(state.newsModel),
-              child: NewsFeed(),
-            );
-          } else if (state is Error) {
-            return Center(
-              child: InkWell(
-                onTap: () {
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text("Fetching top headlines for \"us\""),
-                    duration: Duration(
-                      seconds: 4,
-                    ),
-                  ));
-                  _bloc.add(FetchTopHeadlines("us"));
-                },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.cancel,
-                      color: Colors.grey,
-                      size: 60,
-                    ),
-                    Text("Press to search news for US")
-                  ],
-                ),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: _appBar(),
+      backgroundColor: Colors.grey,
+      bottomNavigationBar: DraggableScrollableSheet(
+        expand: true,
+        initialChildSize: 0.9,
+        maxChildSize: 0.9,
+        minChildSize: 0.3,
+        builder: (BuildContext context, ScrollController scrollController) {
+          return Container(
+            padding: EdgeInsets.symmetric(horizontal: 5),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              border: Border.all(color: Colors.grey[800], width: 3),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
               ),
-            );
-          } else {
-            return Container();
-          }
-        },
-        listener: (context, state) {
-          if (state is Error) {
-            Scaffold.of(context).showSnackBar(SnackBar(
-              content: Text(state.errorMessage),
-              duration: Duration(
-                seconds: 10,
+            ),
+            child: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              controller: scrollController,
+              child: Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(
+                      top: 8,
+                      bottom: 5,
+                    ),
+                    child: Text(
+                      "TOP HEADLINES",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline4
+                          .copyWith(fontWeight: FontWeight.bold, shadows: [
+                        Shadow(
+                          blurRadius: 2,
+                          color: Colors.grey,
+                        )
+                      ]),
+                    ),
+                  ),
+                  BlocBuilder<NewsBloc, NewsState>(
+                    buildWhen: (previous, current) {
+                      if (current is Loading ||
+                          current is Error ||
+                          current is TopHeadlinesFetched) {
+                        return true;
+                      }
+                      return false;
+                    },
+                    builder: (context, state) {
+                      if (state is Loading) {
+                        return Container(
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      } else if (state is TopHeadlinesFetched) {
+                        if (state.newsModel.length != 0) {
+                          return Container(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: state.newsModel.length,
+                              itemBuilder: (context, index) {
+                                return NewsTile(
+                                  articlesModel:
+                                      state.newsModel.elementAt(index),
+                                );
+                              },
+                            ),
+                          );
+                        } else {
+                          return Container(
+                            child: Center(
+                              child: Text("No feed found for you"),
+                            ),
+                          );
+                        }
+                      } else if (state is Error) {
+                        return Container(
+                          child: Center(
+                            child:
+                                Text("En error occured: ${state.errorMessage}"),
+                          ),
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  ),
+                ],
               ),
-            ));
-          }
+            ),
+          );
         },
       ),
     );
   }
 
-  Future<String> _fetchCountryCode() async {
-    Location location = new Location();
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-    LocationData _locationData;
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return _fetchCountryCode();
-      }
-    }
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return _fetchCountryCode();
-      }
-    }
-
-    _locationData = await location.getLocation();
-    final locationObtained = await placemarkFromCoordinates(
-        _locationData.latitude, _locationData.longitude);
-    print(locationObtained.first.isoCountryCode);
-    return locationObtained.first.isoCountryCode;
+  @override
+  void dispose() {
+    _globalSearchController.dispose();
+    super.dispose();
   }
 }

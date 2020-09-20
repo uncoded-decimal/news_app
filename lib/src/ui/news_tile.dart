@@ -12,6 +12,8 @@ class NewsTile extends StatefulWidget {
 }
 
 class _NewsTileState extends State<NewsTile> {
+  double _height = 180.0;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -26,45 +28,56 @@ class _NewsTileState extends State<NewsTile> {
         margin: EdgeInsets.all(5),
         padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(8)),
-            color: Colors.black87,
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.grey[200],
-                  spreadRadius: 0.5,
-                  blurRadius: 2,
-                  offset: Offset(0, 1.5)),
-            ]),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: Colors.grey[800],
+          // boxShadow: [
+          //   BoxShadow(
+          //       color: Colors.grey[200],
+          //       spreadRadius: 0.5,
+          //       blurRadius: 2,
+          //       offset: Offset(0, 1.5)),
+          // ]
+        ),
         child: Column(
           children: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                isBlank(widget.articlesModel.urlToImage)
-                    ? Container()
-                    : Expanded(
-                        flex: 2,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
+            Container(
+              height: _height,
+              child: Stack(
+                children: [
+                  isBlank(widget.articlesModel.urlToImage)
+                      ? Container()
+                      : ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                           child: Image.network(
                             widget.articlesModel.urlToImage,
-                            height: 100,
+                            height: _height,
+                            width: double.infinity,
                             fit: BoxFit.cover,
                           ),
                         ),
-                      ),
-                SizedBox(
-                  width: 5,
-                ),
-                Expanded(
-                    flex: 4,
-                    child: Text(widget.articlesModel.title,
-                        style: Theme.of(context).textTheme.headline6
-                        // .copyWith(color: Colors.white),
-                        )),
-              ],
+                  Container(
+                    padding: EdgeInsets.all(5),
+                    alignment: Alignment.bottomLeft,
+                    child: Text(
+                        widget.articlesModel.title.substring(
+                            0, widget.articlesModel.title.indexOf("-")),
+                        style: Theme.of(context).textTheme.headline6),
+                    decoration: BoxDecoration(
+                      color: Colors.black38,
+                      borderRadius: BorderRadius.circular(10),
+                      // gradient: LinearGradient(
+                      //   colors: [
+                      //     Colors.black,
+                      //     Colors.black,
+                      //     Colors.transparent,
+                      //   ],
+                      //   begin: Alignment.bottomCenter,
+                      //   end: Alignment.topCenter,
+                      // ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             SizedBox(
               height: 5,
@@ -77,7 +90,8 @@ class _NewsTileState extends State<NewsTile> {
                   .textTheme
                   .caption
                   .copyWith(color: Colors.white),
-              maxLines: 4,
+              maxLines: 3,
+              softWrap: true,
               overflow: TextOverflow.ellipsis,
             ),
             SizedBox(height: 5),
