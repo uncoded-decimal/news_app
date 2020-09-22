@@ -3,9 +3,9 @@ import 'package:Headlines/src/models/model.dart';
 
 abstract class NewsState extends Equatable {}
 
-class Loading extends NewsState {
+class FeedLoading extends NewsState {
   @override
-  List<Object> get props => ["Loading"];
+  List<Object> get props => ["FeedLoading"];
 }
 
 class Error extends NewsState {
@@ -25,14 +25,4 @@ class TopHeadlinesFetched extends NewsState {
 
   @override
   List<Object> get props => [this.newsModel, this.country];
-}
-
-class GlobalSearchResultsObtained extends NewsState {
-  final List<ArticlesModel> newsModel;
-  final String query;
-
-  GlobalSearchResultsObtained(this.newsModel, this.query);
-
-  @override
-  List<Object> get props => [this.newsModel, this.query];
 }

@@ -10,19 +10,17 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
   NewsService _newsService;
   NewsBloc({@required DioHttpService httpService})
       : this._newsService = NewsService(httpService),
-        super(Loading());
+        super(FeedLoading());
 
   @override
   Stream<NewsState> mapEventToState(NewsEvent event) async* {
     if (event is FetchTopHeadlines) {
       yield* _fetchTopHeadlines(event.country);
-    } else if (event is FetchSearchResults) {
-      yield* _fetchSearchResults(event.query);
     }
   }
 
   Stream<NewsState> _fetchTopHeadlines(String country) async* {
-    yield Loading();
+    yield FeedLoading();
     if (isBlank(country)) {
       yield Error("Error fetching Top Headlines for your region");
     } else {
@@ -36,21 +34,6 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         print(e);
         yield Error("An error occured");
       }
-    }
-  }
-
-  Stream<NewsState> _fetchSearchResults(String query) async* {
-    yield Loading();
-    try {
-      print("performing search for $query");
-      final response = await _newsService.fetchGlobalSearchResults(
-          query: query.toLowerCase());
-      final models = (response.data["articles"] as List<dynamic>)
-          .map((e) => ArticlesModel.fromMap(e));
-      yield GlobalSearchResultsObtained(models.toList(), query);
-    } catch (e) {
-      print(e);
-      yield Error("An error occured");
     }
   }
 }
