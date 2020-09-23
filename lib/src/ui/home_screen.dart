@@ -209,9 +209,8 @@ class _HomeScreenState extends State<HomeScreen>
                   builder: (context, state) {
                     if (state is FeedLoading) {
                       return Container(
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                        height: 400,
+                        child: Center(child: CircularProgressIndicator()),
                       );
                     } else if (state is TopHeadlinesFetched) {
                       if (state.newsModel.length != 0) {

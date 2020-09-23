@@ -16,11 +16,10 @@ class SearchRepository {
     if (_searchTerms == null) {
       _searchTerms = [key];
     } else {
-      if (_searchTerms.length == 10) {
+      if (_searchTerms.length >= 10) {
         _searchTerms.removeAt(0);
       }
-      _searchTerms.toSet().add(key);
-      _searchTerms.toList();
+      _searchTerms.add(key);
     }
     _searchBox.put("search_terms", _searchTerms);
   }
