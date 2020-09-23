@@ -9,8 +9,10 @@ class SearchLoading extends SearchState {
 }
 
 class SearchInit extends SearchState {
+  final List<String> keys;
+  SearchInit({this.keys});
   @override
-  List<Object> get props => ["SearchLoading"];
+  List<Object> get props => [this.keys];
 }
 
 class SearchError extends SearchState {

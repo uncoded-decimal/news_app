@@ -1,4 +1,5 @@
 import 'package:Headlines/src/blocs/search_bloc/bloc.dart';
+import 'package:Headlines/src/models/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Headlines/src/blocs/news_bloc/bloc.dart';
@@ -22,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   NewsBloc _bloc;
   SearchBloc _searchBloc;
+  Map<SourceModel, bool> sources;
   TextEditingController _globalSearchController;
   String _country;
   AnimationController _bottomSheetController;
@@ -32,12 +34,13 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+    sources = {};
     _bloc = BlocProvider.of<NewsBloc>(context);
     _searchBloc = BlocProvider.of<SearchBloc>(context);
     _globalSearchController = TextEditingController();
     _fetchCountryCode().then((result) {
-      _country = result;
       _bloc.add(FetchTopHeadlines(result));
+      setState(() {});
     });
     _bottomSheetController = AnimationController(vsync: this);
   }
@@ -117,9 +120,27 @@ class _HomeScreenState extends State<HomeScreen>
         padding: EdgeInsets.symmetric(horizontal: 3),
         margin: EdgeInsets.only(top: 10),
         child: Scaffold(
-          floatingActionButton: FloatingActionButton(
-            child: isFeed ? Icon(Icons.search) : Icon(Icons.close),
-            onPressed: () => _feedButtonPress(),
+          floatingActionButton: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              FloatingActionButton(
+                child: Icon(
+                  Icons.sort_by_alpha,
+                ),
+                onPressed: () => showDialog(
+                  context: this.context,
+                  barrierDismissible: true,
+                  builder: (_) => _filtersWidget(),
+                ).then((value) => setState(() {})),
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              FloatingActionButton(
+                child: isFeed ? Icon(Icons.search) : Icon(Icons.close),
+                onPressed: () => _feedButtonPress(),
+              )
+            ],
           ),
           body: SingleChildScrollView(
             physics: BouncingScrollPhysics(),
@@ -169,6 +190,13 @@ class _HomeScreenState extends State<HomeScreen>
                     ],
                   ),
                 ),
+                Text(
+                  isNotEmpty(_country) ? _country : "",
+                  style: Theme.of(context)
+                      .textTheme
+                      .caption
+                      .copyWith(color: Theme.of(context).accentColor),
+                ),
                 BlocBuilder<NewsBloc, NewsState>(
                   buildWhen: (previous, current) {
                     if (current is FeedLoading ||
@@ -187,12 +215,30 @@ class _HomeScreenState extends State<HomeScreen>
                       );
                     } else if (state is TopHeadlinesFetched) {
                       if (state.newsModel.length != 0) {
+                        state.newsModel.forEach((article) {
+                          sources.putIfAbsent(article.source, () => true);
+                        });
                         return Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
                           child: ListView.builder(
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
-                            itemCount: state.newsModel.length,
+                            itemCount: state.newsModel.length + 1,
                             itemBuilder: (context, index) {
+                              if (index == state.newsModel.length) {
+                                return Container(
+                                  height: 100,
+                                  alignment: Alignment.bottomCenter,
+                                  child: Text("Provided by newsapi.org"),
+                                  padding: EdgeInsets.all(5),
+                                );
+                              }
+                              if (!sources[
+                                  state.newsModel.elementAt(index).source]) {
+                                return Container();
+                              }
                               return NewsTile(
                                 articlesModel: state.newsModel.elementAt(index),
                               );
@@ -224,6 +270,47 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       );
 
+  Widget _filtersWidget() => StatefulBuilder(
+        builder: (context, setState) {
+          return Card(
+            margin: EdgeInsets.symmetric(
+              horizontal: 15,
+              vertical: 90,
+            ),
+            child: Container(
+              height: _feedHeight,
+              child: ListView.builder(
+                itemCount: sources.keys.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return Container(
+                      padding: EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Sources",
+                            style: Theme.of(context).textTheme.headline4,
+                          ),
+                          Divider(),
+                        ],
+                      ),
+                    );
+                  }
+                  return CheckboxListTile(
+                    title: Text(sources.keys.elementAt(index - 1).name),
+                    onChanged: (bool value) => setState(() =>
+                        sources[sources.keys.elementAt(index - 1)] =
+                            !sources[sources.keys.elementAt(index - 1)]),
+                    value: sources[sources.keys.elementAt(index - 1)],
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      );
+
   Future<String> _fetchCountryCode() async {
     Location location = new Location();
     bool _serviceEnabled;
@@ -248,6 +335,7 @@ class _HomeScreenState extends State<HomeScreen>
     final locationObtained = await placemarkFromCoordinates(
         _locationData.latitude, _locationData.longitude);
     print(locationObtained.first.isoCountryCode);
+    _country = locationObtained.first.country;
     return locationObtained.first.isoCountryCode;
   }
 
@@ -303,7 +391,19 @@ class _HomeScreenState extends State<HomeScreen>
             },
           );
         } else if (state is SearchInit) {
-          return Container();
+          return LimitedBox(
+            child: state.keys.isNotEmpty
+                ? Wrap(
+                    children: state.keys
+                        .map((e) => Chip(
+                              label: Text(e),
+                            ))
+                        .toList(),
+                    spacing: 1,
+                    runSpacing: 1,
+                  )
+                : Container(),
+          );
         } else {
           return Container();
         }

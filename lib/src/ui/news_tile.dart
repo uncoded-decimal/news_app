@@ -28,16 +28,16 @@ class _NewsTileState extends State<NewsTile> {
         margin: EdgeInsets.all(5),
         padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          color: Colors.grey[800],
-          // boxShadow: [
-          //   BoxShadow(
-          //       color: Colors.grey[200],
-          //       spreadRadius: 0.5,
-          //       blurRadius: 2,
-          //       offset: Offset(0, 1.5)),
-          // ]
-        ),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            color: Colors.grey[800],
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey[900],
+                blurRadius: 2,
+                spreadRadius: 1,
+                offset: Offset(1, 0),
+              ),
+            ]),
         child: Column(
           children: [
             Container(
@@ -63,17 +63,17 @@ class _NewsTileState extends State<NewsTile> {
                             0, widget.articlesModel.title.indexOf("-")),
                         style: Theme.of(context).textTheme.headline6),
                     decoration: BoxDecoration(
-                      color: Colors.black38,
+                      // color: Colors.black38,
                       borderRadius: BorderRadius.circular(10),
-                      // gradient: LinearGradient(
-                      //   colors: [
-                      //     Colors.black,
-                      //     Colors.black,
-                      //     Colors.transparent,
-                      //   ],
-                      //   begin: Alignment.bottomCenter,
-                      //   end: Alignment.topCenter,
-                      // ),
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.black,
+                          Colors.black45,
+                          Colors.transparent,
+                        ],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                      ),
                     ),
                   ),
                 ],
@@ -104,7 +104,17 @@ class _NewsTileState extends State<NewsTile> {
                     .caption
                     .copyWith(color: Theme.of(context).accentColor),
               ),
-            )
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                widget.articlesModel.source.name,
+                style: Theme.of(context)
+                    .textTheme
+                    .caption
+                    .copyWith(color: Color(0xff64d0ff)),
+              ),
+            ),
           ],
         ),
       ),
