@@ -311,31 +311,36 @@ class _HomeScreenState extends State<HomeScreen>
       );
 
   Future<String> _fetchCountryCode() async {
-    Location location = new Location();
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-    LocationData _locationData;
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
+    try{
+      Location location = new Location();
+      bool _serviceEnabled;
+      PermissionStatus _permissionGranted;
+      LocationData _locationData;
+      _serviceEnabled = await location.serviceEnabled();
       if (!_serviceEnabled) {
-        return _fetchCountryCode();
+        _serviceEnabled = await location.requestService();
+        if (!_serviceEnabled) {
+          return _fetchCountryCode();
+        }
       }
-    }
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return _fetchCountryCode();
+      _permissionGranted = await location.hasPermission();
+      if (_permissionGranted == PermissionStatus.denied) {
+        _permissionGranted = await location.requestPermission();
+        if (_permissionGranted != PermissionStatus.granted) {
+          return _fetchCountryCode();
+        }
       }
-    }
 
-    _locationData = await location.getLocation();
-    final locationObtained = await placemarkFromCoordinates(
-        _locationData.latitude, _locationData.longitude);
-    print(locationObtained.first.isoCountryCode);
-    _country = locationObtained.first.country;
-    return locationObtained.first.isoCountryCode;
+      _locationData = await location.getLocation();
+      final locationObtained = await placemarkFromCoordinates(
+          _locationData.latitude, _locationData.longitude);
+      print(locationObtained.first.isoCountryCode);
+      _country = locationObtained.first.country;
+      return locationObtained.first.isoCountryCode;}catch(e){
+      print("Error with location: $e");
+      _country = "United States";
+      return "US";
+    }
   }
 
   Widget _searchBody() {
