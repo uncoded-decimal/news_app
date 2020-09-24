@@ -32,8 +32,8 @@ dependencies:
   built_collection: ^4.3.2
 
   #location
-  location: ^3.0.2
-  geocoding: ^1.0.0
+  geolocator: ^6.0.0
+  geocoding: ^1.0.4+1
 
 dev_dependencies:
   flutter_test:
