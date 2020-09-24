@@ -1,10 +1,9 @@
 import 'package:Headlines/src/blocs/search_bloc/bloc.dart';
 import 'package:Headlines/src/models/model.dart';
+import 'package:Headlines/src/services/location_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Headlines/src/blocs/news_bloc/bloc.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:location/location.dart';
 import 'package:quiver/strings.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -38,7 +37,8 @@ class _HomeScreenState extends State<HomeScreen>
     _bloc = BlocProvider.of<NewsBloc>(context);
     _searchBloc = BlocProvider.of<SearchBloc>(context);
     _globalSearchController = TextEditingController();
-    _fetchCountryCode().then((result) {
+    LocationService.fetchCountryCode().then((result) {
+      _country = LocationService.country;
       _bloc.add(FetchTopHeadlines(result));
       setState(() {});
     });
@@ -309,39 +309,6 @@ class _HomeScreenState extends State<HomeScreen>
           );
         },
       );
-
-  Future<String> _fetchCountryCode() async {
-    try{
-      Location location = new Location();
-      bool _serviceEnabled;
-      PermissionStatus _permissionGranted;
-      LocationData _locationData;
-      _serviceEnabled = await location.serviceEnabled();
-      if (!_serviceEnabled) {
-        _serviceEnabled = await location.requestService();
-        if (!_serviceEnabled) {
-          return _fetchCountryCode();
-        }
-      }
-      _permissionGranted = await location.hasPermission();
-      if (_permissionGranted == PermissionStatus.denied) {
-        _permissionGranted = await location.requestPermission();
-        if (_permissionGranted != PermissionStatus.granted) {
-          return _fetchCountryCode();
-        }
-      }
-
-      _locationData = await location.getLocation();
-      final locationObtained = await placemarkFromCoordinates(
-          _locationData.latitude, _locationData.longitude);
-      print(locationObtained.first.isoCountryCode);
-      _country = locationObtained.first.country;
-      return locationObtained.first.isoCountryCode;}catch(e){
-      print("Error with location: $e");
-      _country = "United States";
-      return "US";
-    }
-  }
 
   Widget _searchBody() {
     return BlocBuilder<SearchBloc, SearchState>(
