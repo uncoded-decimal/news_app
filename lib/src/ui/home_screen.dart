@@ -30,11 +30,13 @@ class _HomeScreenState extends State<HomeScreen>
   double _feedHeight;
   double _searchHeight;
   bool isFeed = true;
+  FocusNode _searchFocusNode;
 
   @override
   void initState() {
     super.initState();
     sources = {};
+    _searchFocusNode = FocusNode();
     _bloc = BlocProvider.of<NewsBloc>(context);
     _searchBloc = BlocProvider.of<SearchBloc>(context);
     _globalSearchController = TextEditingController();
@@ -49,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen>
     final screenHeight = MediaQuery.of(context).size.height;
     _feedHeight = screenHeight -
         MediaQuery.of(context).padding.top -
-        MediaQuery.of(context).viewPadding.top -
+        MediaQuery.of(context).viewPadding.top / 2 -
         MediaQuery.of(context).viewInsets.top;
     _searchHeight = screenHeight / 3;
   }
@@ -57,6 +59,9 @@ class _HomeScreenState extends State<HomeScreen>
   void _feedButtonPress() {
     _globalSearchController.clear();
     _searchBloc.add(InitSearch());
+    if (!isFeed) {
+      _searchFocusNode.unfocus();
+    }
     setState(() {
       isFeed = !isFeed;
     });
@@ -67,24 +72,50 @@ class _HomeScreenState extends State<HomeScreen>
           onPressed: () => _feedButtonPress(),
         ),
         title: TextField(
+          focusNode: _searchFocusNode,
           controller: _globalSearchController,
           style: TextStyle(color: Theme.of(context).accentColor),
           decoration: InputDecoration.collapsed(
             hintText: "Search topics...",
           ),
           maxLines: 1,
-          onEditingComplete: () =>
-              _searchBloc.add(FetchSearchResults(_globalSearchController.text)),
+          onEditingComplete: () {
+            _searchFocusNode.unfocus();
+            _searchBloc.add(FetchSearchResults(_globalSearchController.text));
+          },
         ),
         actions: [
-          isEmpty(_globalSearchController.text)
-              ? Container()
-              : IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: () {
-                    _globalSearchController.clear();
-                    _searchBloc.add(InitSearch());
-                  })
+          BlocBuilder<SearchBloc, SearchState>(
+              bloc: _searchBloc,
+              buildWhen: (previous, current) {
+                if (current is SearchLoading ||
+                    current is GlobalSearchResultsObtained ||
+                    current is SearchInit) {
+                  return true;
+                }
+                return false;
+              },
+              builder: (context, state) {
+                if (state is SearchLoading) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (state is SearchInit) {
+                  return IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        _globalSearchController.clear();
+                      });
+                } else if (state is GlobalSearchResultsObtained) {
+                  return IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        //go back to init
+                        _searchBloc.add(InitSearch());
+                        _globalSearchController.clear();
+                      });
+                } else {
+                  return Container();
+                }
+              }),
         ],
         backgroundColor: Colors.grey[900],
       );
@@ -311,7 +342,7 @@ class _HomeScreenState extends State<HomeScreen>
       );
 
   Future<String> _fetchCountryCode() async {
-    try{
+    try {
       Location location = new Location();
       bool _serviceEnabled;
       PermissionStatus _permissionGranted;
@@ -336,7 +367,8 @@ class _HomeScreenState extends State<HomeScreen>
           _locationData.latitude, _locationData.longitude);
       print(locationObtained.first.isoCountryCode);
       _country = locationObtained.first.country;
-      return locationObtained.first.isoCountryCode;}catch(e){
+      return locationObtained.first.isoCountryCode;
+    } catch (e) {
       print("Error with location: $e");
       _country = "United States";
       return "US";
@@ -399,12 +431,19 @@ class _HomeScreenState extends State<HomeScreen>
             child: state.keys.isNotEmpty
                 ? Wrap(
                     children: state.keys
-                        .map((e) => Chip(
-                              label: Text(e),
+                        .map((e) => GestureDetector(
+                              onTap: () {
+                                _searchBloc.add(FetchSearchResults(e));
+                              },
+                              child: Chip(
+                                label: Text(e),
+                              ),
                             ))
                         .toList(),
-                    spacing: 1,
-                    runSpacing: 1,
+                    spacing: 3,
+                    runSpacing: 0.0,
+                    alignment: WrapAlignment.start,
+                    crossAxisAlignment: WrapCrossAlignment.start,
                   )
                 : Container(),
           );

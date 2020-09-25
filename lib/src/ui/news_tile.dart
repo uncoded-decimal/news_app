@@ -3,25 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:quiver/strings.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class NewsTile extends StatefulWidget {
+class NewsTile extends StatelessWidget {
   final ArticlesModel articlesModel;
+  final double _imageHeight = 180.0;
   NewsTile({Key key, this.articlesModel}) : super(key: key);
-
-  @override
-  _NewsTileState createState() => _NewsTileState();
-}
-
-class _NewsTileState extends State<NewsTile> {
-  double _height = 180.0;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () async {
-        if (await canLaunch(widget.articlesModel.url)) {
-          await launch(widget.articlesModel.url);
+        if (await canLaunch(articlesModel.url)) {
+          await launch(articlesModel.url);
         } else {
-          throw 'Could not launch ${widget.articlesModel.url}';
+          throw 'Could not launch ${articlesModel.url}';
         }
       },
       child: Container(
@@ -39,66 +33,78 @@ class _NewsTileState extends State<NewsTile> {
               ),
             ]),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: _height,
-              child: Stack(
-                children: [
-                  isBlank(widget.articlesModel.urlToImage)
-                      ? Container()
-                      : ClipRRect(
+            isBlank(articlesModel.urlToImage)
+                ? Container(
+                    padding: EdgeInsets.all(5),
+                    alignment: Alignment.center,
+                    child: Text(
+                        articlesModel.title
+                            .substring(0, articlesModel.title.indexOf("-")),
+                        style: Theme.of(context).textTheme.headline6),
+                  )
+                : Container(
+                    height: _imageHeight,
+                    child: Stack(
+                      children: [
+                        ClipRRect(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
                           child: Image.network(
-                            widget.articlesModel.urlToImage,
-                            height: _height,
+                            articlesModel.urlToImage,
+                            height: _imageHeight,
                             width: double.infinity,
                             fit: BoxFit.cover,
                           ),
                         ),
-                  Container(
-                    padding: EdgeInsets.all(5),
-                    alignment: Alignment.bottomLeft,
-                    child: Text(
-                        widget.articlesModel.title.substring(
-                            0, widget.articlesModel.title.indexOf("-")),
-                        style: Theme.of(context).textTheme.headline6),
-                    decoration: BoxDecoration(
-                      // color: Colors.black38,
-                      borderRadius: BorderRadius.circular(10),
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.black,
-                          Colors.black45,
-                          Colors.transparent,
-                        ],
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                      ),
+                        Container(
+                          padding: EdgeInsets.all(5),
+                          alignment: Alignment.bottomLeft,
+                          child: Text(
+                              articlesModel.title.substring(
+                                  0, articlesModel.title.indexOf("-")),
+                              style: Theme.of(context).textTheme.headline6),
+                          decoration: BoxDecoration(
+                            // color: Colors.black38,
+                            borderRadius: BorderRadius.circular(10),
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.black,
+                                Colors.black45,
+                                Colors.transparent,
+                              ],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Text(
-              widget.articlesModel.description ??
-                  widget.articlesModel.content ??
-                  "",
-              style: Theme.of(context)
-                  .textTheme
-                  .caption
-                  .copyWith(color: Colors.white),
-              maxLines: 3,
-              softWrap: true,
-              overflow: TextOverflow.ellipsis,
-            ),
+            isNotEmpty(articlesModel.description) ||
+                    isNotEmpty(articlesModel.content)
+                ? SizedBox(
+                    height: 5,
+                  )
+                : Container(),
+            isNotEmpty(articlesModel.description) ||
+                    isNotEmpty(articlesModel.content)
+                ? Text(
+                    articlesModel.description ?? articlesModel.content ?? "",
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption
+                        .copyWith(color: Colors.white),
+                    maxLines: 3,
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                  )
+                : Container(),
             SizedBox(height: 5),
             Align(
               alignment: Alignment.bottomLeft,
               child: Text(
-                _dateToString(widget.articlesModel.publishedAt),
+                _dateToString(articlesModel.publishedAt),
                 style: Theme.of(context)
                     .textTheme
                     .caption
@@ -108,7 +114,7 @@ class _NewsTileState extends State<NewsTile> {
             Align(
               alignment: Alignment.bottomLeft,
               child: Text(
-                widget.articlesModel.source.name,
+                articlesModel.source.name,
                 style: Theme.of(context)
                     .textTheme
                     .caption
@@ -130,6 +136,11 @@ class _NewsTileState extends State<NewsTile> {
     final minutes = datetime.minute;
     final check = (minutes % 10 == minutes) ? "0" : "";
     // final seconds = datetime.second;
+    if (day == DateTime.now().day) {
+      return "Today at $hours:$check$minutes hrs";
+    } else if (day == DateTime.now().day - 1) {
+      return "Yesterday at $hours:$check$minutes hrs";
+    }
     return "$day/$month/$year at $hours:$check$minutes hrs";
   }
 }

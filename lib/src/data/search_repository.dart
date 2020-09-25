@@ -19,6 +19,11 @@ class SearchRepository {
       if (_searchTerms.length >= 10) {
         _searchTerms.removeAt(0);
       }
+      int indexAlreadyPresent = _searchTerms.indexOf(key);
+      if (indexAlreadyPresent >= 0) {
+        //remove already present item
+        _searchTerms.removeAt(indexAlreadyPresent);
+      }
       _searchTerms.add(key);
     }
     _searchBox.put("search_terms", _searchTerms);
