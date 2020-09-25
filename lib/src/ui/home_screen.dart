@@ -303,40 +303,41 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _filtersWidget() => StatefulBuilder(
         builder: (context, setState) {
           return Card(
+            // child: Container(
+            //   height: _feedHeight / 1.5,
             margin: EdgeInsets.symmetric(
               horizontal: 15,
-              vertical: 90,
+              vertical: _searchHeight / 2,
             ),
-            child: Container(
-              height: _feedHeight,
-              child: ListView.builder(
-                itemCount: sources.keys.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return Container(
-                      padding: EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Sources",
-                            style: Theme.of(context).textTheme.headline4,
-                          ),
-                          Divider(),
-                        ],
-                      ),
-                    );
-                  }
-                  return CheckboxListTile(
-                    title: Text(sources.keys.elementAt(index - 1).name),
-                    onChanged: (bool value) => setState(() =>
-                        sources[sources.keys.elementAt(index - 1)] =
-                            !sources[sources.keys.elementAt(index - 1)]),
-                    value: sources[sources.keys.elementAt(index - 1)],
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: sources.keys.length + 1,
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return Container(
+                    padding: EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Sources",
+                          style: Theme.of(context).textTheme.headline4,
+                        ),
+                        Divider(),
+                      ],
+                    ),
                   );
-                },
-              ),
+                }
+                return CheckboxListTile(
+                  title: Text(sources.keys.elementAt(index - 1).name),
+                  onChanged: (bool value) => setState(() =>
+                      sources[sources.keys.elementAt(index - 1)] =
+                          !sources[sources.keys.elementAt(index - 1)]),
+                  value: sources[sources.keys.elementAt(index - 1)],
+                );
+              },
             ),
+            // ),
           );
         },
       );
@@ -456,6 +457,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void dispose() {
+    _searchFocusNode.dispose();
     _bottomSheetController.dispose();
     _globalSearchController.dispose();
     super.dispose();
