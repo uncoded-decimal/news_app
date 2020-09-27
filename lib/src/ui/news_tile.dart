@@ -10,28 +10,28 @@ class NewsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () async {
-        if (await canLaunch(articlesModel.url)) {
-          await launch(articlesModel.url);
-        } else {
-          throw 'Could not launch ${articlesModel.url}';
-        }
-      },
-      child: Container(
-        margin: EdgeInsets.all(5),
-        padding: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            color: Colors.grey[800],
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey[900],
-                blurRadius: 2,
-                spreadRadius: 1,
-                offset: Offset(1, 0),
-              ),
-            ]),
+    return Container(
+      margin: EdgeInsets.all(5),
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: Colors.grey[800],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey[900],
+              blurRadius: 2,
+              spreadRadius: 1,
+              offset: Offset(1, 0),
+            ),
+          ]),
+      child: InkWell(
+        onTap: () async {
+          if (await canLaunch(articlesModel.url)) {
+            await launch(articlesModel.url);
+          } else {
+            throw 'Could not launch ${articlesModel.url}';
+          }
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:location/location.dart';
-import 'package:quiver/cache.dart';
 import '../utils/constants.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -205,6 +204,9 @@ class _HomeScreenState extends State<HomeScreen>
     return Scaffold(
       appBar: _appBar(),
       body: SearchWidget(),
+      // endDrawer: Container(
+      //   color: Colors.red,
+      // ),
       backgroundColor: Colors.black,
       bottomNavigationBar: BottomSheet(
         animationController: _bottomSheetController,
