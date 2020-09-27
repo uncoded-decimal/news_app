@@ -12,4 +12,4 @@ This app uses:
 ## Problems Solved:
 * PageView keep alives: [StackOverflow Answer](https://stackoverflow.com/a/63574708/8240072)
 
-![image_screenshot](/assets/Screenshot_1600856974.png =250x)
+![](/assets/Screenshot_1600856974.png =250x)
