@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:Headlines/src/constants.dart';
+import 'package:Headlines/src/utils/constants.dart';
 import 'package:Headlines/src/services/dio_http_service.dart';
 
 class NewsService {
@@ -11,6 +11,22 @@ class NewsService {
   Future<Response> fetchTopHeadlines({@required String country}) async {
     String path =
         "/top-headlines?country=$country&apiKey=${Constants.newsApiKey}";
+    final response = await _httpService.handleGetRequestWithoutToken(path);
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return response;
+    } else {
+      throw Exception({
+        "statusCode": response.statusCode,
+        "statusMessage": response.statusMessage,
+        "message": "Unable to fetch levels list",
+      });
+    }
+  }
+
+  Future<Response> fetchTopNews(
+      {@required String country, @required String category}) async {
+    String path =
+        "/top-headlines?country=$country&category=$category&apiKey=${Constants.newsApiKey}";
     final response = await _httpService.handleGetRequestWithoutToken(path);
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return response;

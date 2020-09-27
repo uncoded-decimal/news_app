@@ -1,16 +1,12 @@
+import 'package:Headlines/src/blocs/news_bloc/bloc.dart';
 import 'package:Headlines/src/blocs/search_bloc/bloc.dart';
-import 'package:Headlines/src/models/model.dart';
+import 'package:Headlines/src/ui/news_feed.dart';
+import 'package:Headlines/src/ui/search_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:Headlines/src/blocs/news_bloc/bloc.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:location/location.dart';
-import 'package:quiver/strings.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import '../blocs/news_bloc/news_states.dart';
-import '../constants.dart';
-import 'news_tile.dart';
+import '../utils/constants.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -21,30 +17,111 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  NewsBloc _bloc;
   SearchBloc _searchBloc;
-  Map<SourceModel, bool> sources;
+  NewsBloc _newsBloc;
+  PageController _categoryController;
   TextEditingController _globalSearchController;
-  String _country;
   AnimationController _bottomSheetController;
   double _feedHeight;
   double _searchHeight;
   bool isFeed = true;
   FocusNode _searchFocusNode;
+  List<Widget> newsPages = [];
 
   @override
   void initState() {
     super.initState();
-    sources = {};
     _searchFocusNode = FocusNode();
-    _bloc = BlocProvider.of<NewsBloc>(context);
     _searchBloc = BlocProvider.of<SearchBloc>(context);
+    _newsBloc = BlocProvider.of<NewsBloc>(context);
+    _categoryController = PageController(
+      initialPage: 0,
+      keepPage: true,
+    )..addListener(() {
+        final currentPageIndex = _categoryController.page;
+        // print("Current Page ==== $currentPageIndex");
+      });
     _globalSearchController = TextEditingController();
-    _fetchCountryCode().then((result) {
-      _bloc.add(FetchTopHeadlines(result));
-      setState(() {});
-    });
+    _fetchCountryCode().then((country) => buildPages(country));
     _bottomSheetController = AnimationController(vsync: this);
+  }
+
+  void buildPages(String country) {
+    print("Showing results for ::: $country");
+    _newsBloc
+      ..add(FetchTopHeadlines(country))
+      ..listen((state) {
+        if (state is TopHeadlinesFetched) {
+          newsPages.add(NewsFeedPage(
+            title: "TOP HEADLINES",
+            isFeed: isFeed,
+            filterWidgetMargin: _searchHeight,
+            articles: state.newsModel,
+            onSearchButtonPressed: _searchButtonPress,
+          ));
+          _newsBloc.add(FetchSportsHeadlines(country));
+          setState(() {});
+        } else if (state is SportsHeadlinesFetched) {
+          newsPages.add(NewsFeedPage(
+            isFeed: isFeed,
+            title: "SPORTS",
+            articles: state.newsModel,
+            filterWidgetMargin: _searchHeight,
+            onSearchButtonPressed: _searchButtonPress,
+          ));
+          _newsBloc.add(FetchHealthHeadlines(country));
+          setState(() {});
+        } else if (state is HealthHeadlinesFetched) {
+          newsPages.add(NewsFeedPage(
+            isFeed: isFeed,
+            title: "HEALTH",
+            articles: state.newsModel,
+            filterWidgetMargin: _searchHeight,
+            onSearchButtonPressed: _searchButtonPress,
+          ));
+          _newsBloc.add(FetchScienceHeadlines(country));
+          setState(() {});
+        } else if (state is ScienceHeadlinesFetched) {
+          newsPages.add(NewsFeedPage(
+            title: "SCIENCE",
+            articles: state.newsModel,
+            isFeed: isFeed,
+            filterWidgetMargin: _searchHeight,
+            onSearchButtonPressed: _searchButtonPress,
+          ));
+          _newsBloc.add(FetchTechnologyHeadlines(country));
+          setState(() {});
+        } else if (state is TechnologyHeadlinesFetched) {
+          newsPages.add(NewsFeedPage(
+            isFeed: isFeed,
+            title: "TECHNOLOGY",
+            articles: state.newsModel,
+            filterWidgetMargin: _searchHeight,
+            onSearchButtonPressed: _searchButtonPress,
+          ));
+          _newsBloc.add(FetchBusinessHeadlines(country));
+          setState(() {});
+        } else if (state is BusinessHeadlinesFetched) {
+          newsPages.add(NewsFeedPage(
+            isFeed: isFeed,
+            title: "BUSINESS",
+            articles: state.newsModel,
+            filterWidgetMargin: _searchHeight,
+            onSearchButtonPressed: _searchButtonPress,
+          ));
+          _newsBloc.add(FetchEntertainmentHeadlines(country));
+          setState(() {});
+        } else if (state is EntertainmentHeadlinesFetched) {
+          newsPages.add(NewsFeedPage(
+            isFeed: isFeed,
+            title: "ENTERTAINMENT",
+            articles: state.newsModel,
+            filterWidgetMargin: _searchHeight,
+            onSearchButtonPressed: _searchButtonPress,
+          ));
+          setState(() {});
+        }
+      });
   }
 
   void _formModes() {
@@ -56,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen>
     _searchHeight = screenHeight / 3;
   }
 
-  void _feedButtonPress() {
+  void _searchButtonPress() {
     _globalSearchController.clear();
     _searchBloc.add(InitSearch());
     if (!isFeed) {
@@ -69,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _appBar() => AppBar(
         leading: BackButton(
-          onPressed: () => _feedButtonPress(),
+          onPressed: () => _searchButtonPress(),
         ),
         title: TextField(
           focusNode: _searchFocusNode,
@@ -125,15 +202,36 @@ class _HomeScreenState extends State<HomeScreen>
     _formModes();
     return Scaffold(
       appBar: _appBar(),
-      body: _searchBody(),
+      body: SearchWidget(),
       backgroundColor: Colors.black,
       bottomNavigationBar: BottomSheet(
         animationController: _bottomSheetController,
         onClosing: () {
-          print("Oh hey it closed. This shouldn't be happenning...");
+          print(
+              "Oh hey animationController closed. This shouldn't be happenning...");
         },
         builder: (context) {
-          return _newsListContainer();
+          return AnimatedContainer(
+              duration: Duration(milliseconds: Constants.duration),
+              height: isFeed ? _feedHeight : _searchHeight,
+              padding: EdgeInsets.symmetric(horizontal: 3),
+              margin: EdgeInsets.only(top: 10),
+              child: Scaffold(
+                body: (newsPages.length == 0)
+                    ? Container(
+                        child: CircularProgressIndicator(),
+                        alignment: Alignment.center,
+                      )
+                    : PageView.builder(
+                        controller: _categoryController,
+                        physics: BouncingScrollPhysics(),
+                        pageSnapping: true,
+                        itemCount: newsPages.length,
+                        itemBuilder: (context, index) {
+                          return newsPages.elementAt(index);
+                        },
+                      ),
+              ));
         },
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -144,203 +242,6 @@ class _HomeScreenState extends State<HomeScreen>
       ),
     );
   }
-
-  Widget _newsListContainer() => AnimatedContainer(
-        duration: Duration(milliseconds: Constants.duration),
-        height: isFeed ? _feedHeight : _searchHeight,
-        padding: EdgeInsets.symmetric(horizontal: 3),
-        margin: EdgeInsets.only(top: 10),
-        child: Scaffold(
-          floatingActionButton: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              FloatingActionButton(
-                child: Icon(
-                  Icons.sort_by_alpha,
-                ),
-                onPressed: () => showDialog(
-                  context: this.context,
-                  barrierDismissible: true,
-                  builder: (_) => _filtersWidget(),
-                ).then((value) => setState(() {})),
-              ),
-              SizedBox(
-                width: 8,
-              ),
-              FloatingActionButton(
-                child: isFeed ? Icon(Icons.search) : Icon(Icons.close),
-                onPressed: () => _feedButtonPress(),
-              )
-            ],
-          ),
-          body: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            // controller: scrollController,
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(
-                    top: 8,
-                    bottom: 5,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      AnimatedContainer(
-                        duration: Duration(milliseconds: Constants.duration),
-                        child: !isFeed
-                            ? Container(
-                                width: 0.0,
-                              )
-                            : CircleAvatar(
-                                backgroundImage: AssetImage(
-                                  Constants.appIcon,
-                                ),
-                                radius: 15,
-                              ),
-                      ),
-                      isFeed
-                          ? SizedBox(
-                              width: 10,
-                            )
-                          : Container(),
-                      Text(
-                        "TOP HEADLINES",
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline4
-                            .copyWith(fontWeight: FontWeight.bold, shadows: [
-                          Shadow(
-                            blurRadius: 2,
-                            color: Colors.grey,
-                          )
-                        ]),
-                      ),
-                    ],
-                  ),
-                ),
-                Text(
-                  isNotEmpty(_country) ? _country : "",
-                  style: Theme.of(context)
-                      .textTheme
-                      .caption
-                      .copyWith(color: Theme.of(context).accentColor),
-                ),
-                BlocBuilder<NewsBloc, NewsState>(
-                  buildWhen: (previous, current) {
-                    if (current is FeedLoading ||
-                        current is Error ||
-                        current is TopHeadlinesFetched) {
-                      return true;
-                    }
-                    return false;
-                  },
-                  builder: (context, state) {
-                    if (state is FeedLoading) {
-                      return Container(
-                        height: 400,
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    } else if (state is TopHeadlinesFetched) {
-                      if (state.newsModel.length != 0) {
-                        state.newsModel.forEach((article) {
-                          sources.putIfAbsent(article.source, () => true);
-                        });
-                        return Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: state.newsModel.length + 1,
-                            itemBuilder: (context, index) {
-                              if (index == state.newsModel.length) {
-                                return Container(
-                                  height: 100,
-                                  alignment: Alignment.bottomCenter,
-                                  child: Text("Provided by newsapi.org"),
-                                  padding: EdgeInsets.all(5),
-                                );
-                              }
-                              if (!sources[
-                                  state.newsModel.elementAt(index).source]) {
-                                return Container();
-                              }
-                              return NewsTile(
-                                articlesModel: state.newsModel.elementAt(index),
-                              );
-                            },
-                          ),
-                        );
-                      } else {
-                        return Container(
-                          child: Center(
-                            child: Text("No feed found for you"),
-                          ),
-                        );
-                      }
-                    } else if (state is Error) {
-                      return Container(
-                        child: Center(
-                          child:
-                              Text("En error occured: ${state.errorMessage}"),
-                        ),
-                      );
-                    } else {
-                      return Container();
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-
-  Widget _filtersWidget() => StatefulBuilder(
-        builder: (context, setState) {
-          return Card(
-            // child: Container(
-            //   height: _feedHeight / 1.5,
-            margin: EdgeInsets.symmetric(
-              horizontal: 15,
-              vertical: _searchHeight / 2,
-            ),
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: sources.keys.length + 1,
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return Container(
-                    padding: EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Sources",
-                          style: Theme.of(context).textTheme.headline4,
-                        ),
-                        Divider(),
-                      ],
-                    ),
-                  );
-                }
-                return CheckboxListTile(
-                  title: Text(sources.keys.elementAt(index - 1).name),
-                  onChanged: (bool value) => setState(() =>
-                      sources[sources.keys.elementAt(index - 1)] =
-                          !sources[sources.keys.elementAt(index - 1)]),
-                  value: sources[sources.keys.elementAt(index - 1)],
-                );
-              },
-            ),
-            // ),
-          );
-        },
-      );
 
   Future<String> _fetchCountryCode() async {
     try {
@@ -367,97 +268,17 @@ class _HomeScreenState extends State<HomeScreen>
       final locationObtained = await placemarkFromCoordinates(
           _locationData.latitude, _locationData.longitude);
       print(locationObtained.first.isoCountryCode);
-      _country = locationObtained.first.country;
       return locationObtained.first.isoCountryCode;
     } catch (e) {
       print("Error with location: $e");
-      _country = "United States";
       return "US";
     }
-  }
-
-  Widget _searchBody() {
-    return BlocBuilder<SearchBloc, SearchState>(
-      bloc: _searchBloc,
-      buildWhen: (previous, current) {
-        if (current is SearchLoading ||
-            current is GlobalSearchResultsObtained ||
-            current is SearchInit) {
-          return true;
-        }
-        return false;
-      },
-      builder: (context, state) {
-        if (state is SearchLoading) {
-          return LinearProgressIndicator();
-        } else if (state is GlobalSearchResultsObtained) {
-          return ListView.builder(
-            itemCount: state.newsModel.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.grey[700],
-                ),
-                margin: EdgeInsets.all(3),
-                child: ListTile(
-                  onTap: () async {
-                    if (await canLaunch(state.newsModel.elementAt(index).url)) {
-                      await launch(state.newsModel.elementAt(index).url);
-                    } else {
-                      throw 'Could not launch ${state.newsModel.elementAt(index).url}';
-                    }
-                  },
-                  title: Text(
-                    state.newsModel.elementAt(index).title,
-                    style: Theme.of(context).textTheme.subtitle2.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF64ffda),
-                        ),
-                  ),
-                  subtitle: Text(
-                    state.newsModel.elementAt(index).description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                    ),
-                  ),
-                ),
-              );
-            },
-          );
-        } else if (state is SearchInit) {
-          return LimitedBox(
-            child: state.keys.isNotEmpty
-                ? Wrap(
-                    children: state.keys
-                        .map((e) => GestureDetector(
-                              onTap: () {
-                                _searchBloc.add(FetchSearchResults(e));
-                              },
-                              child: Chip(
-                                label: Text(e),
-                              ),
-                            ))
-                        .toList(),
-                    spacing: 3,
-                    runSpacing: 0.0,
-                    alignment: WrapAlignment.start,
-                    crossAxisAlignment: WrapCrossAlignment.start,
-                  )
-                : Container(),
-          );
-        } else {
-          return Container();
-        }
-      },
-    );
   }
 
   @override
   void dispose() {
     _searchFocusNode.dispose();
+    _categoryController.dispose();
     _bottomSheetController.dispose();
     _globalSearchController.dispose();
     super.dispose();
