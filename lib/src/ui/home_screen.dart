@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:location/location.dart';
+import 'package:quiver/cache.dart';
 import '../utils/constants.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -27,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen>
   bool isFeed = true;
   FocusNode _searchFocusNode;
   List<Widget> newsPages = [];
+  double _progressValue = 0.0;
 
   @override
   void initState() {
@@ -37,10 +39,9 @@ class _HomeScreenState extends State<HomeScreen>
     _categoryController = PageController(
       initialPage: 0,
       keepPage: true,
-    )..addListener(() {
-        final currentPageIndex = _categoryController.page;
-        // print("Current Page ==== $currentPageIndex");
-      });
+    )..addListener(() => setState(() {
+          _progressValue = (_categoryController.page + 1) / (newsPages.length);
+        }));
     _globalSearchController = TextEditingController();
     _fetchCountryCode().then((country) => buildPages(country));
     _bottomSheetController = AnimationController(vsync: this);
@@ -60,7 +61,6 @@ class _HomeScreenState extends State<HomeScreen>
             onSearchButtonPressed: _searchButtonPress,
           ));
           _newsBloc.add(FetchSportsHeadlines(country));
-          setState(() {});
         } else if (state is SportsHeadlinesFetched) {
           newsPages.add(NewsFeedPage(
             isFeed: isFeed,
@@ -70,7 +70,6 @@ class _HomeScreenState extends State<HomeScreen>
             onSearchButtonPressed: _searchButtonPress,
           ));
           _newsBloc.add(FetchHealthHeadlines(country));
-          setState(() {});
         } else if (state is HealthHeadlinesFetched) {
           newsPages.add(NewsFeedPage(
             isFeed: isFeed,
@@ -80,7 +79,6 @@ class _HomeScreenState extends State<HomeScreen>
             onSearchButtonPressed: _searchButtonPress,
           ));
           _newsBloc.add(FetchScienceHeadlines(country));
-          setState(() {});
         } else if (state is ScienceHeadlinesFetched) {
           newsPages.add(NewsFeedPage(
             title: "SCIENCE",
@@ -90,7 +88,6 @@ class _HomeScreenState extends State<HomeScreen>
             onSearchButtonPressed: _searchButtonPress,
           ));
           _newsBloc.add(FetchTechnologyHeadlines(country));
-          setState(() {});
         } else if (state is TechnologyHeadlinesFetched) {
           newsPages.add(NewsFeedPage(
             isFeed: isFeed,
@@ -100,7 +97,6 @@ class _HomeScreenState extends State<HomeScreen>
             onSearchButtonPressed: _searchButtonPress,
           ));
           _newsBloc.add(FetchBusinessHeadlines(country));
-          setState(() {});
         } else if (state is BusinessHeadlinesFetched) {
           newsPages.add(NewsFeedPage(
             isFeed: isFeed,
@@ -110,7 +106,6 @@ class _HomeScreenState extends State<HomeScreen>
             onSearchButtonPressed: _searchButtonPress,
           ));
           _newsBloc.add(FetchEntertainmentHeadlines(country));
-          setState(() {});
         } else if (state is EntertainmentHeadlinesFetched) {
           newsPages.add(NewsFeedPage(
             isFeed: isFeed,
@@ -119,6 +114,13 @@ class _HomeScreenState extends State<HomeScreen>
             filterWidgetMargin: _searchHeight,
             onSearchButtonPressed: _searchButtonPress,
           ));
+        }
+        if (!(state is FeedLoading) && !(state is Error)) {
+          if (!(state is TopHeadlinesFetched)) {
+            /// Need to do this because the PageView is built only
+            /// after the Second state is yielded by the newsBloc
+            _progressValue = (_categoryController.page + 1) / newsPages.length;
+          }
           setState(() {});
         }
       });
@@ -212,26 +214,33 @@ class _HomeScreenState extends State<HomeScreen>
         },
         builder: (context) {
           return AnimatedContainer(
-              duration: Duration(milliseconds: Constants.duration),
-              height: isFeed ? _feedHeight : _searchHeight,
-              padding: EdgeInsets.symmetric(horizontal: 3),
-              margin: EdgeInsets.only(top: 10),
-              child: Scaffold(
-                body: (newsPages.length == 0)
-                    ? Container(
-                        child: CircularProgressIndicator(),
-                        alignment: Alignment.center,
-                      )
-                    : PageView.builder(
-                        controller: _categoryController,
-                        physics: BouncingScrollPhysics(),
-                        pageSnapping: true,
-                        itemCount: newsPages.length,
-                        itemBuilder: (context, index) {
-                          return newsPages.elementAt(index);
-                        },
-                      ),
-              ));
+            duration: Duration(milliseconds: Constants.duration),
+            height: isFeed ? _feedHeight : _searchHeight,
+            padding: EdgeInsets.symmetric(horizontal: 3),
+            margin: EdgeInsets.only(top: 10),
+            child: Scaffold(
+              body: (newsPages.length == 0)
+                  ? Container(
+                      child: CircularProgressIndicator(),
+                      alignment: Alignment.center,
+                    )
+                  : PageView.builder(
+                      controller: _categoryController,
+                      physics: BouncingScrollPhysics(),
+                      pageSnapping: true,
+                      itemCount: newsPages.length,
+                      itemBuilder: (context, index) {
+                        return newsPages.elementAt(index);
+                      },
+                    ),
+              bottomNavigationBar: !(newsPages.length == 0)
+                  ? LinearProgressIndicator(
+                      backgroundColor: Color(0xff64ffd0),
+                      value: _progressValue,
+                    )
+                  : Container(),
+            ),
+          );
         },
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
