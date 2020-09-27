@@ -26,36 +26,33 @@ class NewsFeedPage extends StatefulWidget {
 class _NewsFeedPageState extends State<NewsFeedPage>
     with AutomaticKeepAliveClientMixin {
   Map<SourceModel, bool> sources = {};
+  ScrollController _scrollController;
+  bool _showLabel = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController()
+      ..addListener(() {
+        if (_scrollController.position.pixels > 250) {
+          setState(() {
+            _showLabel = true;
+          });
+        } else {
+          setState(() {
+            _showLabel = false;
+          });
+        }
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            child: Icon(
-              Icons.sort_by_alpha,
-            ),
-            onPressed: () => showDialog(
-              context: this.context,
-              barrierDismissible: true,
-              builder: (_) => _filtersWidget(),
-            ).then((value) => setState(() {})),
-          ),
-          SizedBox(
-            width: 8,
-          ),
-          FloatingActionButton(
-            child: widget.isFeed ? Icon(Icons.search) : Icon(Icons.close),
-            onPressed: () => widget.onSearchButtonPressed(),
-          )
-        ],
-      ),
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
-        // controller: scrollController,
+        controller: _scrollController,
         child: Column(
           children: [
             Container(
@@ -104,6 +101,62 @@ class _NewsFeedPageState extends State<NewsFeedPage>
             feed(),
           ],
         ),
+      ),
+      floatingActionButton: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            child: Icon(
+              Icons.sort_by_alpha,
+            ),
+            onPressed: () => showDialog(
+              context: this.context,
+              barrierDismissible: true,
+              builder: (_) => _filtersWidget(),
+            ).then((value) => setState(() {})),
+          ),
+          SizedBox(
+            width: 8,
+          ),
+          FloatingActionButton(
+            child: widget.isFeed ? Icon(Icons.search) : Icon(Icons.close),
+            onPressed: () => widget.onSearchButtonPressed(),
+          ),
+          SizedBox(
+            width: 8,
+          ),
+          (_showLabel)
+              ? InkWell(
+                  onTap: () => _scrollController.animateTo(
+                    0,
+                    duration: Duration(
+                      milliseconds: Constants.duration,
+                    ),
+                    curve: Curves.bounceInOut,
+                  ),
+                  child: Container(
+                    margin: EdgeInsets.only(right: 0),
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    child: Text(
+                      widget.title,
+                      style: Theme.of(context).textTheme.headline6.copyWith(
+                            color: Colors.black,
+                          ),
+                    ),
+                    height: 50,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Color(0xff64ffd0),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(25),
+                        // bottomLeft: Radius.circular(25),
+                      ),
+                    ),
+                  ),
+                )
+              : Container(),
+        ],
       ),
     );
   }
@@ -188,4 +241,10 @@ class _NewsFeedPageState extends State<NewsFeedPage>
 
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 }

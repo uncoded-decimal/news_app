@@ -23,6 +23,7 @@ class SearchWidget extends StatelessWidget {
           return LinearProgressIndicator();
         } else if (state is GlobalSearchResultsObtained) {
           return ListView.builder(
+            physics: BouncingScrollPhysics(),
             itemCount: state.newsModel.length,
             itemBuilder: (BuildContext context, int index) {
               return Container(

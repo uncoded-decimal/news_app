@@ -1,6 +1,7 @@
 import 'package:Headlines/src/models/model.dart';
 import 'package:flutter/material.dart';
 import 'package:quiver/strings.dart';
+import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NewsTile extends StatelessWidget {
@@ -101,25 +102,41 @@ class NewsTile extends StatelessWidget {
                   )
                 : Container(),
             SizedBox(height: 5),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Text(
-                _dateToString(articlesModel.publishedAt),
-                style: Theme.of(context)
-                    .textTheme
-                    .caption
-                    .copyWith(color: Theme.of(context).accentColor),
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Text(
-                articlesModel.source.name,
-                style: Theme.of(context)
-                    .textTheme
-                    .caption
-                    .copyWith(color: Color(0xff64d0ff)),
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Text(
+                          _dateToString(articlesModel.publishedAt),
+                          style: Theme.of(context)
+                              .textTheme
+                              .caption
+                              .copyWith(color: Theme.of(context).accentColor),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Text(
+                          articlesModel.source.name,
+                          style: Theme.of(context)
+                              .textTheme
+                              .caption
+                              .copyWith(color: Color(0xff64d0ff)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                    child: Icon(Icons.share),
+                    onTap: () {
+                      Share.share(articlesModel.url);
+                    }),
+              ],
             ),
           ],
         ),
