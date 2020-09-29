@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:Headlines/src/blocs/news_bloc/bloc.dart';
 import 'package:Headlines/src/blocs/search_bloc/bloc.dart';
 import 'package:Headlines/src/ui/news_feed.dart';
@@ -256,6 +258,10 @@ class _HomeScreenState extends State<HomeScreen>
 
   Future<String> _fetchCountryCode() async {
     try {
+      final timer = Timer(Duration(seconds: 2), () {
+        print("Location timer completed");
+        throw Exception("Timeout before obtaining location");
+      });
       Location location = new Location();
       bool _serviceEnabled;
       PermissionStatus _permissionGranted;
@@ -278,6 +284,7 @@ class _HomeScreenState extends State<HomeScreen>
       _locationData = await location.getLocation();
       final locationObtained = await placemarkFromCoordinates(
           _locationData.latitude, _locationData.longitude);
+      timer.cancel();
       print(locationObtained.first.isoCountryCode);
       return locationObtained.first.isoCountryCode;
     } catch (e) {
