@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:Headlines/src/models/model.dart';
+import 'package:headlines/src/models/model.dart';
 
 abstract class NewsState extends Equatable {}
 
@@ -17,71 +17,71 @@ class Error extends NewsState {
   List<Object> get props => [this.errorMessage];
 }
 
-class TopHeadlinesFetched extends NewsState {
+class TopheadlinesFetched extends NewsState {
   final List<ArticlesModel> newsModel;
   final String country;
 
-  TopHeadlinesFetched(this.newsModel, this.country);
+  TopheadlinesFetched(this.newsModel, this.country);
 
   @override
   List<Object> get props => [this.newsModel, this.country];
 }
 
-class HealthHeadlinesFetched extends NewsState {
+class HealthheadlinesFetched extends NewsState {
   final List<ArticlesModel> newsModel;
   final String country;
 
-  HealthHeadlinesFetched(this.newsModel, this.country);
+  HealthheadlinesFetched(this.newsModel, this.country);
 
   @override
   List<Object> get props => [this.newsModel, this.country];
 }
 
-class SportsHeadlinesFetched extends NewsState {
+class SportsheadlinesFetched extends NewsState {
   final List<ArticlesModel> newsModel;
   final String country;
 
-  SportsHeadlinesFetched(this.newsModel, this.country);
+  SportsheadlinesFetched(this.newsModel, this.country);
 
   @override
   List<Object> get props => [this.newsModel, this.country];
 }
 
-class ScienceHeadlinesFetched extends NewsState {
+class ScienceheadlinesFetched extends NewsState {
   final List<ArticlesModel> newsModel;
   final String country;
 
-  ScienceHeadlinesFetched(this.newsModel, this.country);
+  ScienceheadlinesFetched(this.newsModel, this.country);
 
   @override
   List<Object> get props => [this.newsModel, this.country];
 }
 
-class TechnologyHeadlinesFetched extends NewsState {
+class TechnologyheadlinesFetched extends NewsState {
   final List<ArticlesModel> newsModel;
   final String country;
 
-  TechnologyHeadlinesFetched(this.newsModel, this.country);
+  TechnologyheadlinesFetched(this.newsModel, this.country);
 
   @override
   List<Object> get props => [this.newsModel, this.country];
 }
 
-class BusinessHeadlinesFetched extends NewsState {
+class BusinessheadlinesFetched extends NewsState {
   final List<ArticlesModel> newsModel;
   final String country;
 
-  BusinessHeadlinesFetched(this.newsModel, this.country);
+  BusinessheadlinesFetched(this.newsModel, this.country);
 
   @override
   List<Object> get props => [this.newsModel, this.country];
 }
 
-class EntertainmentHeadlinesFetched extends NewsState {
+class EntertainmentheadlinesFetched extends NewsState {
   final List<ArticlesModel> newsModel;
   final String country;
 
-  EntertainmentHeadlinesFetched(this.newsModel, this.country);
+  EntertainmentheadlinesFetched(this.newsModel, this.country);
 
   @override
   List<Object> get props => [this.newsModel, this.country];

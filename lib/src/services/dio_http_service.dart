@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:Headlines/src/utils/constants.dart';
+import 'package:headlines/src/utils/constants.dart';
 
 class DioHttpService {
   Dio _dio;

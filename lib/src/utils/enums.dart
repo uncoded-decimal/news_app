@@ -1,5 +1,5 @@
 enum NewsType {
-  TopHeadlines,
+  Topheadlines,
   Business,
   Entertainment,
   Health,
@@ -9,7 +9,7 @@ enum NewsType {
 }
 
 List<NewsType> newsClasses = [
-  NewsType.TopHeadlines,
+  NewsType.Topheadlines,
   NewsType.Health,
   NewsType.Sports,
   NewsType.Science,

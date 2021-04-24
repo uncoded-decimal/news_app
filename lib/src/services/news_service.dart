@@ -1,14 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:Headlines/src/utils/constants.dart';
-import 'package:Headlines/src/services/dio_http_service.dart';
+import 'package:headlines/src/utils/constants.dart';
+import 'package:headlines/src/services/dio_http_service.dart';
 
 class NewsService {
   final DioHttpService _httpService;
 
   NewsService(DioHttpService httpService) : this._httpService = httpService;
 
-  Future<Response> fetchTopHeadlines({@required String country}) async {
+  Future<Response> fetchTopheadlines({@required String country}) async {
     String path =
         "/top-headlines?country=$country&apiKey=${Constants.newsApiKey}";
     final response = await _httpService.handleGetRequestWithoutToken(path);

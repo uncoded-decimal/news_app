@@ -2,7 +2,7 @@ library articles;
 
 import 'dart:convert';
 
-import 'package:Headlines/src/models/model.dart';
+import 'package:headlines/src/models/model.dart';
 
 import 'serializers.dart';
 import 'package:built_value/built_value.dart';

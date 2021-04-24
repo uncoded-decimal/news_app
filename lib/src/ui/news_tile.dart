@@ -1,4 +1,4 @@
-import 'package:Headlines/src/models/model.dart';
+import 'package:headlines/src/models/model.dart';
 import 'package:flutter/material.dart';
 import 'package:quiver/strings.dart';
 import 'package:share/share.dart';

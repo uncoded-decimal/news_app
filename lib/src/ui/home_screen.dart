@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:Headlines/src/blocs/news_bloc/bloc.dart';
-import 'package:Headlines/src/blocs/search_bloc/bloc.dart';
-import 'package:Headlines/src/ui/news_feed.dart';
-import 'package:Headlines/src/ui/search_body.dart';
+import 'package:headlines/src/blocs/news_bloc/bloc.dart';
+import 'package:headlines/src/blocs/search_bloc/bloc.dart';
+import 'package:headlines/src/ui/news_feed.dart';
+import 'package:headlines/src/ui/search_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
@@ -51,18 +51,18 @@ class _HomeScreenState extends State<HomeScreen>
   void buildPages(String country) {
     print("Showing results for ::: $country");
     _newsBloc
-      ..add(FetchTopHeadlines(country))
+      ..add(FetchTopheadlines(country))
       ..listen((state) {
-        if (state is TopHeadlinesFetched) {
+        if (state is TopheadlinesFetched) {
           newsPages.add(NewsFeedPage(
-            title: "TOP HEADLINES",
+            title: "TOP headlines",
             isFeed: isFeed,
             filterWidgetMargin: _searchHeight,
             articles: state.newsModel,
             onSearchButtonPressed: _searchButtonPress,
           ));
-          _newsBloc.add(FetchSportsHeadlines(country));
-        } else if (state is SportsHeadlinesFetched) {
+          _newsBloc.add(FetchSportsheadlines(country));
+        } else if (state is SportsheadlinesFetched) {
           newsPages.add(NewsFeedPage(
             isFeed: isFeed,
             title: "SPORTS",
@@ -70,8 +70,8 @@ class _HomeScreenState extends State<HomeScreen>
             filterWidgetMargin: _searchHeight,
             onSearchButtonPressed: _searchButtonPress,
           ));
-          _newsBloc.add(FetchHealthHeadlines(country));
-        } else if (state is HealthHeadlinesFetched) {
+          _newsBloc.add(FetchHealthheadlines(country));
+        } else if (state is HealthheadlinesFetched) {
           newsPages.add(NewsFeedPage(
             isFeed: isFeed,
             title: "HEALTH",
@@ -79,8 +79,8 @@ class _HomeScreenState extends State<HomeScreen>
             filterWidgetMargin: _searchHeight,
             onSearchButtonPressed: _searchButtonPress,
           ));
-          _newsBloc.add(FetchScienceHeadlines(country));
-        } else if (state is ScienceHeadlinesFetched) {
+          _newsBloc.add(FetchScienceheadlines(country));
+        } else if (state is ScienceheadlinesFetched) {
           newsPages.add(NewsFeedPage(
             title: "SCIENCE",
             articles: state.newsModel,
@@ -88,8 +88,8 @@ class _HomeScreenState extends State<HomeScreen>
             filterWidgetMargin: _searchHeight,
             onSearchButtonPressed: _searchButtonPress,
           ));
-          _newsBloc.add(FetchTechnologyHeadlines(country));
-        } else if (state is TechnologyHeadlinesFetched) {
+          _newsBloc.add(FetchTechnologyheadlines(country));
+        } else if (state is TechnologyheadlinesFetched) {
           newsPages.add(NewsFeedPage(
             isFeed: isFeed,
             title: "TECHNOLOGY",
@@ -97,8 +97,8 @@ class _HomeScreenState extends State<HomeScreen>
             filterWidgetMargin: _searchHeight,
             onSearchButtonPressed: _searchButtonPress,
           ));
-          _newsBloc.add(FetchBusinessHeadlines(country));
-        } else if (state is BusinessHeadlinesFetched) {
+          _newsBloc.add(FetchBusinessheadlines(country));
+        } else if (state is BusinessheadlinesFetched) {
           newsPages.add(NewsFeedPage(
             isFeed: isFeed,
             title: "BUSINESS",
@@ -106,8 +106,8 @@ class _HomeScreenState extends State<HomeScreen>
             filterWidgetMargin: _searchHeight,
             onSearchButtonPressed: _searchButtonPress,
           ));
-          _newsBloc.add(FetchEntertainmentHeadlines(country));
-        } else if (state is EntertainmentHeadlinesFetched) {
+          _newsBloc.add(FetchEntertainmentheadlines(country));
+        } else if (state is EntertainmentheadlinesFetched) {
           newsPages.add(NewsFeedPage(
             isFeed: isFeed,
             title: "ENTERTAINMENT",
@@ -117,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen>
           ));
         }
         if (!(state is FeedLoading) && !(state is Error)) {
-          if (!(state is TopHeadlinesFetched)) {
+          if (!(state is TopheadlinesFetched)) {
             /// Need to do this because the PageView is built only
             /// after the Second state is yielded by the newsBloc
             _progressValue = (_categoryController.page + 1) / newsPages.length;
@@ -258,7 +258,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Future<String> _fetchCountryCode() async {
     try {
-      final timer = Timer(Duration(seconds: 2), () {
+      final timer = Timer(Duration(seconds: 30), () {
         print("Location timer completed");
         throw Exception("Timeout before obtaining location");
       });

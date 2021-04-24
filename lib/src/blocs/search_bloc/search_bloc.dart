@@ -1,8 +1,8 @@
-import 'package:Headlines/src/blocs/search_bloc/bloc.dart';
-import 'package:Headlines/src/data/search_repository.dart';
-import 'package:Headlines/src/models/model.dart';
-import 'package:Headlines/src/services/dio_http_service.dart';
-import 'package:Headlines/src/services/news_service.dart';
+import 'package:headlines/src/blocs/search_bloc/bloc.dart';
+import 'package:headlines/src/data/search_repository.dart';
+import 'package:headlines/src/models/model.dart';
+import 'package:headlines/src/services/dio_http_service.dart';
+import 'package:headlines/src/services/news_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

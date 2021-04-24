@@ -2,64 +2,64 @@ import 'package:equatable/equatable.dart';
 
 abstract class NewsEvent extends Equatable {}
 
-class FetchTopHeadlines extends NewsEvent {
+class FetchTopheadlines extends NewsEvent {
   final String country;
 
-  FetchTopHeadlines(this.country);
+  FetchTopheadlines(this.country);
 
   @override
   List<Object> get props => [this.country];
 }
 
-class FetchTechnologyHeadlines extends NewsEvent {
+class FetchTechnologyheadlines extends NewsEvent {
   final String country;
 
-  FetchTechnologyHeadlines(this.country);
+  FetchTechnologyheadlines(this.country);
 
   @override
   List<Object> get props => [this.country];
 }
 
-class FetchScienceHeadlines extends NewsEvent {
+class FetchScienceheadlines extends NewsEvent {
   final String country;
 
-  FetchScienceHeadlines(this.country);
+  FetchScienceheadlines(this.country);
 
   @override
   List<Object> get props => [this.country];
 }
 
-class FetchHealthHeadlines extends NewsEvent {
+class FetchHealthheadlines extends NewsEvent {
   final String country;
 
-  FetchHealthHeadlines(this.country);
+  FetchHealthheadlines(this.country);
 
   @override
   List<Object> get props => [this.country];
 }
 
-class FetchSportsHeadlines extends NewsEvent {
+class FetchSportsheadlines extends NewsEvent {
   final String country;
 
-  FetchSportsHeadlines(this.country);
+  FetchSportsheadlines(this.country);
 
   @override
   List<Object> get props => [this.country];
 }
 
-class FetchBusinessHeadlines extends NewsEvent {
+class FetchBusinessheadlines extends NewsEvent {
   final String country;
 
-  FetchBusinessHeadlines(this.country);
+  FetchBusinessheadlines(this.country);
 
   @override
   List<Object> get props => [this.country];
 }
 
-class FetchEntertainmentHeadlines extends NewsEvent {
+class FetchEntertainmentheadlines extends NewsEvent {
   final String country;
 
-  FetchEntertainmentHeadlines(this.country);
+  FetchEntertainmentheadlines(this.country);
 
   @override
   List<Object> get props => [this.country];

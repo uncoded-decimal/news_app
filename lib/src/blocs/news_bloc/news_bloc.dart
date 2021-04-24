@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:Headlines/src/blocs/news_bloc/bloc.dart';
-import 'package:Headlines/src/models/articles_model.dart';
-import 'package:Headlines/src/services/dio_http_service.dart';
-import 'package:Headlines/src/services/news_service.dart';
+import 'package:headlines/src/blocs/news_bloc/bloc.dart';
+import 'package:headlines/src/models/articles_model.dart';
+import 'package:headlines/src/services/dio_http_service.dart';
+import 'package:headlines/src/services/news_service.dart';
 import 'package:quiver/strings.dart';
 
 class NewsBloc extends Bloc<NewsEvent, NewsState> {
@@ -14,34 +14,34 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
 
   @override
   Stream<NewsState> mapEventToState(NewsEvent event) async* {
-    if (event is FetchTopHeadlines) {
-      yield* _fetchTopHeadlines(event.country);
-    } else if (event is FetchTechnologyHeadlines) {
+    if (event is FetchTopheadlines) {
+      yield* _fetchTopheadlines(event.country);
+    } else if (event is FetchTechnologyheadlines) {
       yield* _fetchTopTechnology(event.country);
-    } else if (event is FetchScienceHeadlines) {
+    } else if (event is FetchScienceheadlines) {
       yield* _fetchTopScience(event.country);
-    } else if (event is FetchHealthHeadlines) {
+    } else if (event is FetchHealthheadlines) {
       yield* _fetchTopHealth(event.country);
-    } else if (event is FetchSportsHeadlines) {
+    } else if (event is FetchSportsheadlines) {
       yield* _fetchTopSports(event.country);
-    } else if (event is FetchBusinessHeadlines) {
+    } else if (event is FetchBusinessheadlines) {
       yield* _fetchTopBusiness(event.country);
-    } else if (event is FetchEntertainmentHeadlines) {
+    } else if (event is FetchEntertainmentheadlines) {
       yield* _fetchTopEntertainment(event.country);
     }
   }
 
-  Stream<NewsState> _fetchTopHeadlines(String country) async* {
+  Stream<NewsState> _fetchTopheadlines(String country) async* {
     yield FeedLoading();
     if (isBlank(country)) {
-      yield Error("Error fetching Top Headlines for your region");
+      yield Error("Error fetching Top headlines for your region");
     } else {
       try {
-        final response = await _newsService.fetchTopHeadlines(
+        final response = await _newsService.fetchTopheadlines(
             country: country.toLowerCase().substring(0, 2));
         final models = (response.data["articles"] as List<dynamic>)
             .map((e) => ArticlesModel.fromMap(e));
-        yield TopHeadlinesFetched(models.toList(), country);
+        yield TopheadlinesFetched(models.toList(), country);
       } catch (e) {
         print(e);
         yield Error("An error occured");
@@ -61,7 +61,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         );
         final models = (response.data["articles"] as List<dynamic>)
             .map((e) => ArticlesModel.fromMap(e));
-        yield TechnologyHeadlinesFetched(models.toList(), country);
+        yield TechnologyheadlinesFetched(models.toList(), country);
       } catch (e) {
         print(e);
         yield Error("An error occured");
@@ -81,7 +81,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         );
         final models = (response.data["articles"] as List<dynamic>)
             .map((e) => ArticlesModel.fromMap(e));
-        yield SportsHeadlinesFetched(models.toList(), country);
+        yield SportsheadlinesFetched(models.toList(), country);
       } catch (e) {
         print(e);
         yield Error("An error occured");
@@ -101,7 +101,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         );
         final models = (response.data["articles"] as List<dynamic>)
             .map((e) => ArticlesModel.fromMap(e));
-        yield HealthHeadlinesFetched(models.toList(), country);
+        yield HealthheadlinesFetched(models.toList(), country);
       } catch (e) {
         print(e);
         yield Error("An error occured");
@@ -121,7 +121,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         );
         final models = (response.data["articles"] as List<dynamic>)
             .map((e) => ArticlesModel.fromMap(e));
-        yield ScienceHeadlinesFetched(models.toList(), country);
+        yield ScienceheadlinesFetched(models.toList(), country);
       } catch (e) {
         print(e);
         yield Error("An error occured");
@@ -141,7 +141,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         );
         final models = (response.data["articles"] as List<dynamic>)
             .map((e) => ArticlesModel.fromMap(e));
-        yield BusinessHeadlinesFetched(models.toList(), country);
+        yield BusinessheadlinesFetched(models.toList(), country);
       } catch (e) {
         print(e);
         yield Error("An error occured");
@@ -161,7 +161,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         );
         final models = (response.data["articles"] as List<dynamic>)
             .map((e) => ArticlesModel.fromMap(e));
-        yield EntertainmentHeadlinesFetched(models.toList(), country);
+        yield EntertainmentheadlinesFetched(models.toList(), country);
       } catch (e) {
         print(e);
         yield Error("An error occured");

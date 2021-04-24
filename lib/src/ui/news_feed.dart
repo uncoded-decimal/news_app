@@ -1,7 +1,7 @@
-import 'package:Headlines/src/models/articles_model.dart';
-import 'package:Headlines/src/utils/constants.dart';
-import 'package:Headlines/src/models/source_model.dart';
-import 'package:Headlines/src/ui/news_tile.dart';
+import 'package:headlines/src/models/articles_model.dart';
+import 'package:headlines/src/utils/constants.dart';
+import 'package:headlines/src/models/source_model.dart';
+import 'package:headlines/src/ui/news_tile.dart';
 import 'package:flutter/material.dart';
 
 class NewsFeedPage extends StatefulWidget {
